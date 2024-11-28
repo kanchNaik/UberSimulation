@@ -1,75 +1,76 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from customer.models import Customer
 from django.shortcuts import get_object_or_404
-from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer
+from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer
 
-class CustomerView(APIView):
 
-    def get(self, request, *args, **kwargs):
+class CustomerViewSet(viewsets.ModelViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+
+    def get_serializer_class(self):
         """
-        Handles listing all customers or retrieving a specific customer by ID.
+        Dynamically switch serializer classes based on the action.
         """
-        customer_id = kwargs.get('id')
-        print(kwargs)
-        if customer_id:  # If `id` is provided, fetch the specific customer
-            customer = get_object_or_404(Customer, id=customer_id)
-            serializer = CustomerListSerializer(customer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        if self.action == 'create':
+            return CustomerRegistrationSerializer
+        elif self.action in ['list', 'retrieve']:
+            return CustomerListSerializer
+        return super().get_serializer_class()
 
-        # If no `id` is provided, list all customers
-        customers = Customer.objects.all()
-        serializer = CustomerListSerializer(customers, many=True)
+    def list(self, request, *args, **kwargs):
+        """
+        List all customers.
+        """
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a single customer by ID.
+        """
+        customer = get_object_or_404(Customer, pk=kwargs.get('pk'))
+        serializer = self.get_serializer(customer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
         """
         Handles customer registration.
         """
-        serializer = CustomerRegistrationSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             customer = serializer.save()
             return Response(
-                {"message": "Customer registered successfully!", "user_id": customer.user.id},
+                {
+                    "message": "Customer registered successfully!",
+                    "user_id": customer.user.id,
+                    "customer_id": customer.id
+                },
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def put(self, request, *args, **kwargs):
-        """
-        Handle both full (PUT) and partial (PATCH) updates.
-        """
-        customer_id = kwargs.get('id')
-        if not customer_id:
-            return Response(
-                {"error": "Customer ID is required for updating."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-        customer = get_object_or_404(Customer, id=customer_id)
-
-        # Determine whether this is a full or partial update
-        partial = request.method == "PATCH"
+    def update(self, request, *args, **kwargs):
+        """
+        Handles both PUT (full update) and PATCH (partial update).
+        """
+        partial = kwargs.pop('partial', False)
+        customer = get_object_or_404(Customer, pk=kwargs.get('pk'))
         serializer = CustomerRegistrationSerializer(customer, data=request.data, partial=partial)
 
         if serializer.is_valid():
             serializer.save()
-            return Response(
-                {"message": "Customer updated successfully!"},
-                status=status.HTTP_200_OK
-            )
+            return Response({"message": "Customer updated successfully!"}, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    patch = put # Alias `patch` to use the same logic as `put`
-
-
-    def delete(self, request, id, *args, **kwargs):
-        try:
-            customer = Customer.objects.get(id=id)
-        except Customer.DoesNotExist:
-            return Response({"error": "Customer not found."}, status=status.HTTP_404_NOT_FOUND)
-
+    def destroy(self, request, *args, **kwargs):
+        """
+        Handles customer deletion.
+        """
+        customer = get_object_or_404(Customer, pk=kwargs.get('pk'))
         customer.user.delete()  # Deletes the related User as well
         customer.delete()
         return Response({"message": "Customer deleted successfully!"}, status=status.HTTP_200_OK)
