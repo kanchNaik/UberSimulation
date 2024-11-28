@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'accounts',
     'customer',
     'driver',
+    'rides',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
