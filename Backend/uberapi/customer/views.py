@@ -3,6 +3,7 @@ from rest_framework import status, viewsets
 from customer.models import Customer
 from django.shortcuts import get_object_or_404
 from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer
+from django.core.cache import cache
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -21,19 +22,45 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        List all customers.
+        List all customers with caching.
         """
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        cache_key = 'customers_list'
+        customers_data = cache.get(cache_key)  # Try fetching from cache
+        if not customers_data:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            customers_data = serializer.data
+            cache.set(cache_key, customers_data, timeout=3600)  # Cache for 1 hour
+        return Response(customers_data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
         """
-        Retrieve a single customer by ID.
+        Retrieve a single customer by ID with caching.
         """
-        customer = get_object_or_404(Customer, pk=kwargs.get('pk'))
-        serializer = self.get_serializer(customer)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        customer_id = kwargs.get('pk')
+        cache_key = f'customer_{customer_id}'
+        customer_data = cache.get(cache_key)  # Try fetching from cache
+        if not customer_data:
+            customer = get_object_or_404(Customer, pk=customer_id)
+            serializer = self.get_serializer(customer)
+            customer_data = serializer.data
+            cache.set(cache_key, customer_data, timeout=3600)  # Cache for 1 hour
+        return Response(customer_data, status=status.HTTP_200_OK)
+
+    # Optional: Clear cache after update or delete
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        cache_key = f'customer_{kwargs.get("pk")}'
+        cache.delete(cache_key)
+        cache.delete('customers_list')  # Clear the list cache
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        cache_key = f'customer_{kwargs.get("pk")}'
+        cache.delete(cache_key)
+        cache.delete('customers_list')  # Clear the list cache
+        return response
 
     def create(self, request, *args, **kwargs):
         """

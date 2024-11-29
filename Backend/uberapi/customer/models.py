@@ -2,6 +2,9 @@ import random
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.core.cache import cache
 
 class Customer(models.Model):
     # Override default id field with a custom auto-generated SSN-format field
@@ -37,6 +40,17 @@ class Customer(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.id})"
 
+@receiver(post_save, sender=Customer)
+def clear_customer_cache_on_save(sender, instance, **kwargs):
+    cache_key = f'customer_{instance.id}'
+    cache.delete(cache_key)
+    cache.delete('customers_list')
+
+@receiver(post_delete, sender=Customer)
+def clear_customer_cache_on_delete(sender, instance, **kwargs):
+    cache_key = f'customer_{instance.id}'
+    cache.delete(cache_key)
+    cache.delete('customers_list')
 
 # class Review(models.Model):
 #     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
