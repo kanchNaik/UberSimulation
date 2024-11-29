@@ -9,7 +9,7 @@ class Location(models.Model):
 
     def __str__(self):
         return f"Lat: {self.latitude}, Lon: {self.longitude}"
-    
+
 class Ride(models.Model):
     # Ride ID with SSN format
     ride_id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True)
@@ -20,6 +20,10 @@ class Ride(models.Model):
 
     # Date and time of the ride
     date_time = models.DateTimeField()
+    
+    # Specific times for pickup and dropoff
+    pickup_time = models.TimeField()
+    dropoff_time = models.TimeField()
 
     # Foreign keys to Customer and Driver
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='rides')

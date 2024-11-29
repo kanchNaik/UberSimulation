@@ -48,6 +48,22 @@ class RideViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def update(self, request, pk=None):
+        """
+        Update an existing ride. Supports both PUT (full update) and PATCH (partial update).
+        """
+        try:
+            ride = Ride.objects.get(pk=pk)
+        except Ride.DoesNotExist:
+            return Response({"error": "Ride not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = RideSerializer(ride, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
     def destroy(self, request, pk=None):
         """
         Delete a ride by its primary key.
