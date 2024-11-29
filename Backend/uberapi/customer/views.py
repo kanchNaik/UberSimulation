@@ -1,8 +1,11 @@
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from customer.models import Customer
+from driver.models import Driver
+from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer
+from geopy.distance import geodesic
+from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer, CustomerLocationSerializer
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -74,3 +77,50 @@ class CustomerViewSet(viewsets.ModelViewSet):
         customer.user.delete()  # Deletes the related User as well
         customer.delete()
         return Response({"message": "Customer deleted successfully!"}, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['put'], url_path='set-location')
+    def set_location(self, request, pk=None):
+        """
+        Custom action to set the latitude and longitude of a customer.
+        """
+        try:
+            customer = self.get_object()
+        except Customer.DoesNotExist:
+            return Response({"error": "Customer not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CustomerLocationSerializer(customer, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    @action(detail=True, methods=['get'], url_path='nearby-drivers')
+    def drivers_nearby(self, request, pk=None):
+        try:
+            # Get the customer object
+            customer = Customer.objects.get(id=pk)
+            
+            print(customer)
+            if not customer.latitude or not customer.longitude:
+                return Response({"error": "Customer location is not set."}, status=400)
+
+            customer_location = (customer.latitude, customer.longitude)
+
+            # Find drivers within a 10-mile radius
+            drivers = Driver.objects.filter(is_available=True)
+            nearby_drivers = []
+
+            for driver in drivers:
+                driver_location = (driver.latitude, driver.longitude)
+                distance = geodesic(customer_location, driver_location).miles
+
+                if distance <= 10:
+                    nearby_drivers.append(driver)
+
+            # Serialize and return the results
+            serializer = NearbyDriverSerializer(nearby_drivers, many=True)
+            return Response(serializer.data)
+
+        except Customer.DoesNotExist:
+            return Response({"error": "Customer not found."}, status=404)

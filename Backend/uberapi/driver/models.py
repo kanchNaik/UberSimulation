@@ -26,6 +26,11 @@ class Driver(models.Model):
     introduction_video = models.FileField(upload_to='driver_videos/', blank=True, null=True)
     vehicle = models.OneToOneField(Vehicle, on_delete=models.CASCADE, related_name='driver', null=True, blank=True)
     rating = models.FloatField(null=True, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    is_available = models.BooleanField(default=True)
+
+
 
     def save(self, *args, **kwargs):
         if not self.id:

@@ -7,6 +7,11 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = '__all__'
 
+class CustomerLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['latitude', 'longitude']
+
 class CustomerRegistrationSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True)
     email = serializers.EmailField(required=True)
@@ -28,6 +33,8 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
             'phone_number',
             'credit_card',
             'rating',
+            'latitude',
+            'longitude',
         ]
 
     def validate(self, data):
@@ -112,7 +119,7 @@ class CustomerListSerializer(serializers.ModelSerializer):
         model = Customer
         fields = [
             'id', 'username', 'first_name', 'last_name', 'profile_image', 'address', 'city', 'state',
-            'zip_code', 'phone_number', 'email', 'credit_card', 'rating'
+            'zip_code', 'phone_number', 'email', 'credit_card', 'rating', 'latitude', 'longitude'
         ]
 
 # API for Creating Customer

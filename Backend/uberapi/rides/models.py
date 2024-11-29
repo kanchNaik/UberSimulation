@@ -2,6 +2,7 @@ from django.db import models
 from driver.models import Driver
 from customer.models import Customer
 import random
+from django.conf import settings
 
 class Location(models.Model):
     latitude = models.FloatField()
@@ -50,3 +51,31 @@ class Ride(models.Model):
             ride_id = f"{random.randint(100, 999)}-{random.randint(10, 99)}-{random.randint(1000, 9999)}"
             if not Ride.objects.filter(ride_id=ride_id).exists():
                 return ride_id
+
+
+class RideEventImage(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='ride_event_images')
+    ride = models.ForeignKey(Ride, on_delete=models.CASCADE, related_name='ride_event_images')
+    image = models.ImageField(upload_to='ride_event_images/')
+    description = models.TextField(blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Event Image for Ride {self.ride.id} - Customer {self.customer.first_name} {self.customer.last_name}"
+
+
+
+class Review(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="reviews")
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name="reviews", null=True, blank=True)
+    ride = models.ForeignKey(Ride, on_delete=models.CASCADE, related_name="reviews", null=True, blank=True)
+    review_text = models.TextField()
+    rating = models.IntegerField()  # Rating value, e.g., 1-5
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("customer", "driver", "ride")  # Prevent duplicate reviews for the same driver/ride
+
+    def __str__(self):
+        target = self.driver or self.ride
+        return f"Review by {self.customer.username} for {target} - Rating: {self.rating}"

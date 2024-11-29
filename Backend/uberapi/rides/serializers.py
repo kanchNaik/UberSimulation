@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Ride, Location
+from .models import Ride, Location, RideEventImage, Review
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,3 +66,34 @@ class RideSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+class RideEventImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RideEventImage
+        fields = ['id', 'customer', 'ride', 'image', 'description', 'uploaded_at']
+        read_only_fields = ['id', 'uploaded_at']
+
+    def create(self, validated_data):
+        return RideEventImage.objects.create(**validated_data)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ["id", "customer", "driver", "ride", "review_text", "rating", "created_at"]
+        read_only_fields = ["id", "created_at"]
+
+    def validate(self, data):
+        """
+        Ensure a valid rating and a target (driver or ride) is provided.
+        """
+        if not data.get("driver") and not data.get("ride"):
+            raise serializers.ValidationError("You must specify either a driver or a ride to review.")
+
+        if data.get("driver") and data.get("ride"):
+            raise serializers.ValidationError("You can only review either a driver or a ride, not both.")
+
+        if not (1 <= data["rating"] <= 5):
+            raise serializers.ValidationError("Rating must be between 1 and 5.")
+
+        return data

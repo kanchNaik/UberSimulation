@@ -18,6 +18,9 @@ class Customer(models.Model):
     rating = models.FloatField(null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -36,7 +39,7 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.id})"
-
+    
 
 # class Review(models.Model):
 #     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
