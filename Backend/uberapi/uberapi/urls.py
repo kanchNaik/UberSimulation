@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/drivers/', include('driver.urls')), 
     path('api/rides/', include('rides.urls')),
     path('api/billing/', include('Billing.urls')),
+    path('api/administrator/', include('administrator.urls')),
 ]
