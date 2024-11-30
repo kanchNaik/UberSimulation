@@ -6,12 +6,13 @@ from rest_framework.authtoken.models import Token
 from accounts.models import User
 from accounts.serializers import LoginSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny
 
 class LoginViewSet(viewsets.ViewSet):
     """
     API for logging in a user and returning a JWT token.
     """
-
+    permission_classes = [AllowAny]
     @action(detail=False, methods=['post'], url_path='login')
     def login(self, request):
         """

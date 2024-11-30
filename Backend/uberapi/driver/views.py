@@ -5,6 +5,10 @@ from rest_framework.decorators import action
 from .models import Driver, Vehicle
 from .serializers import DriverRegistrationSerializer, DriverListSerializer, \
     DriverLocationSerializer, NearbyDriverSerializer, DriverIntroVideoSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import AllowAny
 
 class DriverViewSet(viewsets.ModelViewSet):
     """
@@ -28,6 +32,16 @@ class DriverViewSet(viewsets.ModelViewSet):
             return DriverIntroVideoSerializer
         return super().get_serializer_class()
 
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_authentication_classes(self):
+        if self.action == 'create':
+            return []
+        return [JWTAuthentication()]
+    
     def list(self, request, *args, **kwargs):
         """
         List all drivers.

@@ -6,7 +6,10 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from geopy.distance import geodesic
 from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer, CustomerLocationSerializer
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import AllowAny
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -22,6 +25,17 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return CustomerListSerializer
         return super().get_serializer_class()
 
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_authentication_classes(self):
+        if self.action == 'create':
+            return []
+        return [JWTAuthentication()]
+    
     def list(self, request, *args, **kwargs):
         """
         List all customers.

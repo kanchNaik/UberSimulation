@@ -12,11 +12,25 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate
 from rest_framework.decorators import action
 from .serializers import AdministratorSerializer, AdministratorRegistrationSerializer, AdministratorListSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import AllowAny
 
 class AdministratorViewSet(viewsets.ModelViewSet):
     queryset = Administrator.objects.all()
     serializer_class = AdministratorSerializer
 
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_authentication_classes(self):
+        if self.action == 'create':
+            return []
+        return [JWTAuthentication()]
+    
     def get_serializer_class(self):
         """
         Dynamically switch serializer classes based on the action.
@@ -35,6 +49,8 @@ class AdministratorViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @authentication_classes([JWTAuthentication])
+    @permission_classes([IsAuthenticated])
     def retrieve(self, request, *args, **kwargs):
         """
         Retrieve a single administrator by ID.
@@ -43,10 +59,12 @@ class AdministratorViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(administrator)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
     def create(self, request, *args, **kwargs):
         """
         Handles administrator registration.
         """
+    
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             administrator = serializer.save()

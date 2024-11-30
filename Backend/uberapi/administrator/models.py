@@ -13,7 +13,6 @@ class Administrator(models.Model):
     state = models.CharField(max_length=100)
     zip_code = models.CharField(max_length=10)
     phone_number = models.CharField(max_length=15)
-    email = models.EmailField(unique=True)
     department = models.CharField(max_length=100, blank=True, null=True)  # Department or role of the administrator
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
