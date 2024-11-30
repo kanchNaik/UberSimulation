@@ -2,6 +2,9 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import Bill
 from .serializers import BillSerializer
+from django.utils.timezone import now
+from rest_framework.decorators import action
+from datetime import timedelta
 
 class BillViewSet(viewsets.ModelViewSet):
     """
@@ -78,3 +81,56 @@ class BillViewSet(viewsets.ModelViewSet):
 
         bill.delete()
         return Response({"message": "Bill deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+    @action(detail=False, methods=['get'], url_path='search')
+    def search_bills(self, request):
+        """
+        Custom API to search bills by customer ID, driver ID, ride ID, or date range.
+        If no date range is specified, default to the last month.
+        """
+        # Extract query parameters
+        customer_id = request.query_params.get('customer')
+        driver_id = request.query_params.get('driver')
+        ride_id = request.query_params.get('ride')
+        date_range = request.query_params.get('date_range')  # e.g., "week", "month", "6months", "year"
+
+        # Start with all bills
+        bills = Bill.objects.all()
+
+        # Filter by customer
+        if customer_id:
+            bills = bills.filter(customer__id=customer_id)
+
+        # Filter by driver
+        if driver_id:
+            bills = bills.filter(driver__id=driver_id)
+
+        # Filter by ride
+        if ride_id:
+            bills = bills.filter(ride__id=ride_id)
+
+        # Date range logic
+        today = now().date()
+        if date_range:
+            if date_range == "day":
+                start_date = today
+            elif date_range == "week":
+                start_date = today - timedelta(weeks=1)
+            elif date_range == "month":
+                start_date = today - timedelta(days=30)
+            elif date_range == "6months":
+                start_date = today - timedelta(days=182)
+            elif date_range == "year":
+                start_date = today - timedelta(days=365)
+            else:
+                start_date = today - timedelta(days=30)
+            bills = bills.filter(date__gte=start_date)
+        else:
+            # Default to filtering for the last month if no date range is specified
+            start_date = today - timedelta(days=30)
+            bills = bills.filter(date__gte=start_date)
+
+        # Serialize the filtered bills
+        serializer = BillSerializer(bills, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,26 +1,40 @@
-from rest_framework.views import APIView
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 from accounts.models import User
-from customer.models import Customer
-from customer.serializers import CustomerRegistrationSerializer
+from accounts.serializers import LoginSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
-class CustomerRegisterView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = CustomerRegistrationSerializer(data=request.data)
+class LoginViewSet(viewsets.ViewSet):
+    """
+    API for logging in a user and returning a JWT token.
+    """
+
+    @action(detail=False, methods=['post'], url_path='login')
+    def login(self, request):
+        """
+        Handle user login and return a JWT token.
+        """
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            user_data = serializer.validated_data.pop('user')  # Extract user data
-            user = User.objects.create_user(
-                username=user_data['username'],
-                password=user_data['password'],
-                is_customer=True,
-            )
+            username = serializer.validated_data.get('username')
+            password = serializer.validated_data.get('password')
 
-            # Create Customer instance linked to the user
-            Customer.objects.create(user=user, **serializer.validated_data)
+            # Authenticate the user
+            user = authenticate(username=username, password=password)
+            if not user:
+                return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            return Response(
-                {"message": "Customer signed up successfully!", "user_id": user.id},
-                status=status.HTTP_201_CREATED,
-            )
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            return Response({
+                "refresh": str(refresh),
+                "access": access_token,
+                "user_id": user.id,
+            }, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

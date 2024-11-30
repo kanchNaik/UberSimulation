@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'Billing',
     'administrator',
     'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

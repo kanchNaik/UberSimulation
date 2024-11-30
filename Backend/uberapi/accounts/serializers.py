@@ -1,15 +1,24 @@
 from rest_framework import serializers
 from accounts.models import User
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'password']
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+
+class SignInSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            password=validated_data['password'],
-            is_customer=True 
-        )
-        return user
+        # Add logic to create and authenticate the user
+        username = validated_data['username']
+        password = validated_data['password']
+        
+        # You might want to check the credentials here
+        user = User.objects.filter(username=username).first()
+        if user and user.check_password(password):
+            return user
+        else:
+            raise serializers.ValidationError("Invalid credentials")
+
