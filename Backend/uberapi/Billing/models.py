@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.core.cache import cache
 from driver.models import Driver
 from customer.models import Customer
 from rides.models import Ride
@@ -18,21 +18,35 @@ class Bill(models.Model):
         choices=[('paid', 'Paid'), ('unpaid', 'Unpaid')]
     )
 
-    def __str__(self):
-        return f"Bill {self.bill_id} - Ride {self.ride.ride_id}"
-
-
-
-
     class Meta:
         verbose_name = "Bill"
         verbose_name_plural = "Bills"
 
+    def __str__(self):
+        return f"Bill {self.bill_id} - Ride {self.ride.ride_id}"
+
     def save(self, *args, **kwargs):
-        """Override save method to generate a unique bill ID."""
+        """
+        Override save method to generate a unique bill ID and clear cache.
+        """
         if not self.bill_id:
             self.bill_id = self.generate_billing_id()
         super().save(*args, **kwargs)
+        self.clear_cache()
+
+    def delete(self, *args, **kwargs):
+        """
+        Override delete method to clear cache before deletion.
+        """
+        self.clear_cache()
+        super().delete(*args, **kwargs)
+
+    def clear_cache(self):
+        """
+        Clear the cache for this bill and the bill list.
+        """
+        cache.delete(f'bill_{self.bill_id}')  # Clear individual bill cache
+        cache.delete('bills_list')  # Clear the list cache
 
     @staticmethod
     def generate_billing_id():
