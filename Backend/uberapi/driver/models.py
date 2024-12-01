@@ -1,8 +1,10 @@
 from django.db import models
 from django.conf import settings
-
+from django.core.cache import cache
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 class Vehicle(models.Model):
-    id = models.AutoField(primary_key=True)  # Auto-generated primary key
+    id = models.AutoField(primary_key=True)
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     year = models.PositiveIntegerField()
@@ -42,3 +44,22 @@ class Driver(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.id})"
+# Signal to clear cache when a Driver object is saved
+@receiver(post_save, sender=Driver)
+def clear_driver_cache_on_save(sender, instance, **kwargs):
+    """
+    Clear the cache for a specific driver and the driver list when a Driver instance is saved.
+    """
+    cache_key = f'driver_{instance.id}'  
+    cache.delete(cache_key) 
+    cache.delete('drivers_list')
+
+# Signal to clear cache when a Driver object is deleted
+@receiver(post_delete, sender=Driver)
+def clear_driver_cache_on_delete(sender, instance, **kwargs):
+    """
+    Clear the cache for a specific driver and the driver list when a Driver instance is deleted.
+    """
+    cache_key = f'driver_{instance.id}' 
+    cache.delete(cache_key)  # Delete individual driver cache
+    cache.delete('drivers_list')  # Delete driver list cache
