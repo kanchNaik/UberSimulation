@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from customer.models import Customer
 from accounts.models import User
+from django.db import transaction
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -79,15 +80,16 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
         email = validated_data.pop('email')
         password = validated_data.pop('password', None)
 
+        with transaction.atomic():
         # Create user
-        user = User.objects.create(username=username, email=email)
-        if password:
-            user.set_password(password)
-        user.save()
+            user = User.objects.create(username=username, email=email)
+            if password:
+                user.set_password(password)
+            user.save()
 
-        # Create customer profile
-        customer = Customer.objects.create(user=user, **validated_data)
-        return customer
+            # Create customer profile
+            customer = Customer.objects.create(user=user, **validated_data)
+            return customer
 
     def update(self, instance, validated_data):
         # Extract user-related fields
