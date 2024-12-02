@@ -97,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  # Database engine
         'NAME': 'uber',         # Name of the database
         'USER': 'root',              # MySQL username
-        'PASSWORD': '#Alliswell*3',          # MySQL password
+        'PASSWORD': 'KanchAsNa@020667',          # MySQL password
         'HOST': 'localhost',                  # Database host, use '127.0.0.1' for localhost
         'PORT': '3306',                       # Default MySQL port
         'OPTIONS': {
