@@ -3,6 +3,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 
+# Added cache invalidation signals
+from django.core.cache import cache
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
 class Customer(models.Model):
     # Override default id field with a custom auto-generated SSN-format field
     id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True)
@@ -39,13 +44,19 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.id})"
-    
 
-# class Review(models.Model):
-#     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
-#     review_text = models.TextField()
-#     rating = models.IntegerField()  # Rating value, e.g., 1-5
-#     created_at = models.DateTimeField(auto_now_add=True)
+# Signals to invalidate cache when a Customer is created, updated, or deleted
+@receiver(post_save, sender=Customer)
+@receiver(post_delete, sender=Customer)
+def invalidate_customer_cache(sender, instance, **kwargs):
+    cache_key = f"customer_{instance.id}"
+    cache.delete(cache_key)
 
-#     def __str__(self):
-#         return f"Review by {self.customer.first_name} {self.customer.last_name} - Rating: {self.rating}"
+class Review(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
+    review_text = models.TextField()
+    rating = models.IntegerField()  # Rating value, e.g., 1-5
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review by {self.customer.first_name} {self.customer.last_name} - Rating: {self.rating}"

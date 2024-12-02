@@ -81,7 +81,6 @@ class RideViewSet(viewsets.ModelViewSet):
         ride.delete()
         return Response({"message": "Ride deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     
-
 class RideEventImageViewSet(viewsets.ModelViewSet):
     queryset = RideEventImage.objects.all()
     serializer_class = RideEventImageSerializer
