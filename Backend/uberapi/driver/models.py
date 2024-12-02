@@ -1,5 +1,8 @@
 from django.db import models
 from django.conf import settings
+from django.core.cache import cache  # Added for caching
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 class Vehicle(models.Model):
     id = models.AutoField(primary_key=True)  # Auto-generated primary key
@@ -47,3 +50,14 @@ class Driver(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.id})"
+
+# Signals for cache invalidation
+@receiver(post_save, sender=Driver)
+@receiver(post_delete, sender=Driver)
+def invalidate_driver_cache(sender, instance, **kwargs):
+    # Invalidate individual driver cache
+    cache_key = f"driver_{instance.id}"
+    cache.delete(cache_key)
+
+    # Invalidate driver list cache
+    cache.delete("drivers_list")
