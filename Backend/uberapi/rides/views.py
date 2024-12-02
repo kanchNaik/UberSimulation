@@ -1,11 +1,13 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import Ride, RideEventImage, Review
-from .serializers import RideSerializer, RideEventImageSerializer, ReviewSerializer
+
+from .consumers import RideAssignmentConsumer
+from .models import Ride, RideEventImage, Review, RideRequest
+from .serializers import RideSerializer, RideEventImageSerializer, ReviewSerializer, RideRequestSerializer
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from customer.models import Customer
-
+from tasks import process_ride_request
 class RideViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for viewing, creating, updating, and deleting rides.
@@ -158,3 +160,24 @@ class ReviewViewSet(viewsets.ModelViewSet):
         reviews = Review.objects.filter(ride_id=ride_id)
         serializer = self.get_serializer(reviews, many=True)
         return Response(serializer.data)
+
+class RideRequestViewSet(viewsets.ModelViewSet):
+    queryset = RideRequest.objects.all()
+    serializer_class = RideRequestSerializer
+
+    def post(self, request):
+        serializer = RideRequestSerializer(data=request.data)
+
+        if serializer.is_valid():
+            # Async task to process ride request
+            ride_request = serializer.save()
+
+            # Schedule a background task to process the ride request
+            process_ride_request.delay(ride_request.id)
+
+            return Response({
+                'ride_request_id': ride_request.id,
+                'status': 'Processing'
+            }, status=status.HTTP_202_ACCEPTED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
