@@ -51,3 +51,12 @@ class Customer(models.Model):
 def invalidate_customer_cache(sender, instance, **kwargs):
     cache_key = f"customer_{instance.id}"
     cache.delete(cache_key)
+
+class Review(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
+    review_text = models.TextField()
+    rating = models.IntegerField()  # Rating value, e.g., 1-5
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review by {self.customer.first_name} {self.customer.last_name} - Rating: {self.rating}"
