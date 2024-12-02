@@ -128,6 +128,13 @@ CACHES = {
 #     }
 # }
 
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -172,3 +179,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# from django.db import connection
+
+# with connection.cursor() as cursor:
+#     cursor.execute("PRAGMA journal_mode=WAL;")
+
+# with connection.cursor() as cursor:
+#     cursor.execute("PRAGMA cache_size = -64000;")  # 64MB cache
+
+# with connection.cursor() as cursor:
+#     cursor.execute("PRAGMA synchronous = OFF;")
