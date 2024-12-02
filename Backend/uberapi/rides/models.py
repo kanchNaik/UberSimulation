@@ -13,7 +13,7 @@ class Location(models.Model):
 
 class Ride(models.Model):
     # Ride ID with SSN format
-    ride_id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True)
+    ride_id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True, db_index=True)
 
     # Foreign keys to Location for pickup and drop-off
     pickup_location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='pickup_rides')
@@ -27,8 +27,8 @@ class Ride(models.Model):
     dropoff_time = models.TimeField()
 
     # Foreign keys to Customer and Driver
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='rides')
-    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='rides')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='rides', db_index=True)
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='rides', db_index=True)
 
     def __str__(self):
         return f"Ride {self.ride_id} - Customer {self.customer.id}, Driver {self.driver.id}"

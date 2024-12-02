@@ -14,6 +14,7 @@ from rest_framework.permissions import AllowAny
 from django.core.cache import cache  # Added for caching
 from django.db import transaction
 from accounts.models import User
+from rest_framework.pagination import PageNumberPagination
 
 class DriverViewSet(viewsets.ModelViewSet):
     """
@@ -36,32 +37,36 @@ class DriverViewSet(viewsets.ModelViewSet):
         elif self.action == 'upload_intro_video':
             return DriverIntroVideoSerializer
         return super().get_serializer_class()
+    permission_classes = [AllowAny]
+    # def get_permissions(self):
+    #     if self.action == 'create' or self.action == 'bulk_register' or self.action == 'list':
+    #         return [AllowAny()]
+    #     return [IsAuthenticated()]
 
-    def get_permissions(self):
-        if self.action == 'create' or self.action == 'bulk_register' or self.action == 'list':
-            return [AllowAny()]
-        return [IsAuthenticated()]
-
-    def get_authentication_classes(self):
-        if self.action == 'create' or self.action == 'bulk_register' or self.action == 'list':
-            return []
-        return [JWTAuthentication()]
+    # def get_authentication_classes(self):
+    #     if self.action == 'create' or self.action == 'bulk_register' or self.action == 'list':
+    #         return []
+    #     return [JWTAuthentication()]
     
     def list(self, request, *args, **kwargs):
         """
         List all drivers with caching.
         """
-        # Added caching logic
-        cache_key = "drivers_list"
+        page_number = request.query_params.get('page', 1)
+        cache_key = f"drivers_list_page_{page_number}"
         cached_data = cache.get(cache_key)
 
         if cached_data:  # Return cached data if available
             return Response(cached_data, status=status.HTTP_200_OK)
 
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        queryset = self.filter_queryset(self.get_queryset())
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # You can set this dynamically or in settings
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = self.get_serializer(paginated_queryset, many=True)
         cache.set(cache_key, serializer.data, timeout=300)  # Cache for 5 minutes
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -87,7 +92,10 @@ class DriverViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             driver = serializer.save()
-            cache.delete("drivers_list")  # Invalidate driver list cache
+            #cache.delete("drivers_list")  # Invalidate driver list cache
+            keys_to_invalidate = cache.keys("drivers_list_page_*")
+            for key in keys_to_invalidate:
+                cache.delete(key)
             return Response(
                 {
                     "message": "Driver registered successfully!",
@@ -111,7 +119,10 @@ class DriverViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             cache.delete(f"driver_{driver_id}")  # Invalidate individual driver cache
-            cache.delete("drivers_list")  # Invalidate driver list cache
+            #cache.delete("drivers_list")  # Invalidate driver list cache
+            keys_to_invalidate = cache.keys("drivers_list_page_*")
+            for key in keys_to_invalidate:
+                cache.delete(key)
             return Response({"message": "Driver updated successfully!"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -126,7 +137,11 @@ class DriverViewSet(viewsets.ModelViewSet):
         driver.user.delete()  # Deletes the related User as well
         driver.delete()
         cache.delete(f"driver_{driver_id}")  # Invalidate individual driver cache
-        cache.delete("drivers_list")  # Invalidate driver list cache
+        #cache.delete("drivers_list")  # Invalidate driver list cache
+        keys_to_invalidate = cache.keys("drivers_list_page_*")
+        for key in keys_to_invalidate:
+            cache.delete(key)
+
         return Response({"message": "Driver deleted successfully!"}, status=status.HTTP_200_OK)
     
 
@@ -275,6 +290,10 @@ class DriverViewSet(viewsets.ModelViewSet):
 
             # Bulk insert drivers without specifying primary keys
             Driver.objects.bulk_create(drivers_to_create)
+
+        keys_to_invalidate = cache.keys("drivers_list_page_*")
+        for key in keys_to_invalidate:
+            cache.delete(key)
 
         return Response(
             {

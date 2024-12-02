@@ -10,7 +10,7 @@ from django.dispatch import receiver
 
 class Customer(models.Model):
     # Override default id field with a custom auto-generated SSN-format field
-    id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True)
+    id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True, db_index=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer_profile')
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     address = models.TextField(blank=True, null=True)
@@ -52,11 +52,11 @@ def invalidate_customer_cache(sender, instance, **kwargs):
     cache_key = f"customer_{instance.id}"
     cache.delete(cache_key)
 
-class Review(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
-    review_text = models.TextField()
-    rating = models.IntegerField()  # Rating value, e.g., 1-5
-    created_at = models.DateTimeField(auto_now_add=True)
+# class Review(models.Model):
+#     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
+#     review_text = models.TextField()
+#     rating = models.IntegerField()  # Rating value, e.g., 1-5
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Review by {self.customer.first_name} {self.customer.last_name} - Rating: {self.rating}"
+#     def __str__(self):
+#         return f"Review by {self.customer.first_name} {self.customer.last_name} - Rating: {self.rating}"

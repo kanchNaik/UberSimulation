@@ -14,6 +14,7 @@ from rest_framework.permissions import AllowAny
 from driver.serializers import NearbyDriverSerializer
 from django.db import transaction
 from accounts.models import User
+from rest_framework.pagination import PageNumberPagination
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.select_related('user')  # Eager load User data
@@ -42,19 +43,24 @@ class CustomerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     def list(self, request, *args, **kwargs):
         """
-        List all customers with caching.
+        List all customers with caching and pagination.
         """
-        # Added caching logic for the customer list
-        cache_key = "customers_list"
+        # Use the page number as part of the cache key
+        page_number = request.query_params.get('page', 1)
+        cache_key = f"customers_list_page_{page_number}"
         cached_data = cache.get(cache_key)
 
         if cached_data:  # Return cached data if available
             return Response(cached_data, status=status.HTTP_200_OK)
 
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        queryset = self.filter_queryset(self.get_queryset())
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # You can set this dynamically or in settings
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = self.get_serializer(paginated_queryset, many=True)
         cache.set(cache_key, serializer.data, timeout=300)  # Cache for 5 minutes
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -80,7 +86,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             customer = serializer.save()
-            cache.delete("customers_list")  # Invalidate customer list cache
+            #cache.delete("customers_list")  # Invalidate customer list cache
+            keys_to_invalidate = cache.keys("customers_list_page_*")
+            for key in keys_to_invalidate:
+                cache.delete(key)
+
             return Response(
                 {
                     "message": "Customer registered successfully!",
@@ -104,7 +114,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             cache.delete(f"customer_{customer_id}")  # Invalidate individual customer cache
-            cache.delete("customers_list")  # Invalidate customer list cache
+            #cache.delete("customers_list")  # Invalidate customer list cache
+            keys_to_invalidate = cache.keys("customers_list_page_*")
+            for key in keys_to_invalidate:
+                cache.delete(key)
+
             return Response({"message": "Customer updated successfully!"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -119,7 +133,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         customer.user.delete()  # Deletes the related User as well
         customer.delete()
         cache.delete(f"customer_{customer_id}")  # Invalidate individual customer cache
-        cache.delete("customers_list")  # Invalidate customer list cache
+        #cache.delete("customers_list")  # Invalidate customer list cache
+        keys_to_invalidate = cache.keys("customers_list_page_*")
+        for key in keys_to_invalidate:
+            cache.delete(key)
+
         return Response({"message": "Customer deleted successfully!"}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['put'], url_path='set-location')
@@ -249,7 +267,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
             
             # Bulk insert customers without specifying primary keys
             Customer.objects.bulk_create(customers_to_create)
-
+            keys_to_invalidate = cache.keys("customers_list_page_*")
+            for key in keys_to_invalidate:
+                cache.delete(key)
 
         return Response(
             {

@@ -15,7 +15,7 @@ class Vehicle(models.Model):
         return f"{self.make} {self.model} ({self.id})"
 
 class Driver(models.Model):
-    id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True)
+    id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True, db_index=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='driver_profile')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)

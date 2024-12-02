@@ -1,11 +1,11 @@
 import random
 from django.db import models
-from django.contrib.auth.models import User
+from accounts.models import User
 from django.conf import settings
 
 class Administrator(models.Model):
     # Override default id field with a custom auto-generated SSN-format field
-    id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True)
+    id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True, db_index=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='administrator_profile')
     profile_image = models.ImageField(upload_to='admin_profile_images/', blank=True, null=True)
     address = models.TextField(blank=True, null=True)
