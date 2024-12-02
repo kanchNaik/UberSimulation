@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Ride, Location, RideEventImage, Review
+from .models import Ride, Location, RideEventImage, Review, RideRequest
+
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -97,3 +98,29 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Rating must be between 1 and 5.")
 
         return data
+
+class RideRequestSerializer(serializers.ModelSerializer):
+    pickup_location = serializers.DictField(write_only=True)
+    dropoff_location = serializers.DictField(write_only=True)
+
+    class Meta:
+        model = RideRequest
+        fields = [
+            'pickup_location', 'dropoff_location',
+            'date_time', 'pickup_time', 'dropoff_time',
+            'customer', 'driver'
+        ]
+
+    def create(self, validated_data):
+        pickup_location = validated_data.pop('pickup_location')
+        dropoff_location = validated_data.pop('dropoff_location')
+
+        ride_request = RideRequest.objects.create(
+            pickup_latitude=pickup_location['latitude'],
+            pickup_longitude=pickup_location['longitude'],
+            dropoff_latitude=dropoff_location['latitude'],
+            dropoff_longitude=dropoff_location['longitude'],
+            **validated_data
+        )
+        return ride_request
+

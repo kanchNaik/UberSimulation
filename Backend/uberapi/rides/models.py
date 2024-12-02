@@ -79,3 +79,16 @@ class Review(models.Model):
     def __str__(self):
         target = self.driver or self.ride
         return f"Review by {self.customer.username} for {target} - Rating: {self.rating}"
+
+
+class RideRequest(models.Model):
+        pickup_latitude = models.FloatField()
+        pickup_longitude = models.FloatField()
+        dropoff_latitude = models.FloatField()
+        dropoff_longitude = models.FloatField()
+        date_time = models.DateTimeField()
+        pickup_time = models.TimeField()
+        customer_id = models.CharField(max_length=20, null=False, blank=False)
+        driver_id = models.CharField(max_length=20, null=True, blank=True)
+        status = models.CharField(max_length=20, default='PENDING')
+        created_at = models.DateTimeField(auto_now_add=True)
