@@ -3,12 +3,15 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from .models import Driver, Vehicle
-from .serializers import DriverRegistrationSerializer, DriverListSerializer, \
+from .serializers import (
+    DriverRegistrationSerializer, DriverListSerializer, 
     DriverLocationSerializer, NearbyDriverSerializer, DriverIntroVideoSerializer
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
+from django.core.cache import cache  # Added for caching
 from django.db import transaction
 from accounts.models import User
 
@@ -46,27 +49,45 @@ class DriverViewSet(viewsets.ModelViewSet):
     
     def list(self, request, *args, **kwargs):
         """
-        List all drivers.
+        List all drivers with caching.
         """
+        # Added caching logic
+        cache_key = "drivers_list"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:  # Return cached data if available
+            return Response(cached_data, status=status.HTTP_200_OK)
+
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
+        cache.set(cache_key, serializer.data, timeout=300)  # Cache for 5 minutes
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
         """
-        Retrieve a single driver by ID.
+        Retrieve a single driver by ID with caching.
         """
-        driver = get_object_or_404(Driver, pk=kwargs.get('pk'))
+        # Added caching logic
+        driver_id = kwargs.get('pk')
+        cache_key = f"driver_{driver_id}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:  # Return cached data if available
+            return Response(cached_data, status=status.HTTP_200_OK)
+
+        driver = get_object_or_404(Driver, pk=driver_id)
         serializer = self.get_serializer(driver)
+        cache.set(cache_key, serializer.data, timeout=300)  # Cache for 5 minutes
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         """
-        Handles driver registration.
+        Handles driver registration and invalidates the driver list cache.
         """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             driver = serializer.save()
+            cache.delete("drivers_list")  # Invalidate driver list cache
             return Response(
                 {
                     "message": "Driver registered successfully!",
@@ -79,32 +100,40 @@ class DriverViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         """
-        Handles both PUT (full update) and PATCH (partial update).
+        Handles both PUT (full update) and PATCH (partial update) with cache invalidation.
         """
+        # Added cache invalidation logic
+        driver_id = kwargs.get('pk')
         partial = kwargs.pop('partial', False)
-        driver = get_object_or_404(Driver, pk=kwargs.get('pk'))
+        driver = get_object_or_404(Driver, pk=driver_id)
         serializer = DriverRegistrationSerializer(driver, data=request.data, partial=partial)
 
         if serializer.is_valid():
             serializer.save()
+            cache.delete(f"driver_{driver_id}")  # Invalidate individual driver cache
+            cache.delete("drivers_list")  # Invalidate driver list cache
             return Response({"message": "Driver updated successfully!"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         """
-        Handles driver deletion.
+        Handles driver deletion and invalidates relevant caches.
         """
-        driver = get_object_or_404(Driver, pk=kwargs.get('pk'))
+        # Added cache invalidation logic
+        driver_id = kwargs.get('pk')
+        driver = get_object_or_404(Driver, pk=driver_id)
         driver.user.delete()  # Deletes the related User as well
         driver.delete()
+        cache.delete(f"driver_{driver_id}")  # Invalidate individual driver cache
+        cache.delete("drivers_list")  # Invalidate driver list cache
         return Response({"message": "Driver deleted successfully!"}, status=status.HTTP_200_OK)
     
 
     @action(detail=True, methods=['put'], url_path='set-location')
     def set_location(self, request, pk=None):
         """
-        Custom action to set the latitude and longitude of a customer.
+        Custom action to set the latitude and longitude of a driver.
         """
         try:
             driver = self.get_object()
@@ -114,6 +143,7 @@ class DriverViewSet(viewsets.ModelViewSet):
         serializer = DriverLocationSerializer(driver, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            cache.delete(f"driver_{driver.id}")  # Invalidate cache after updating location
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -122,7 +152,7 @@ class DriverViewSet(viewsets.ModelViewSet):
         """
         Search for drivers based on any combination of attributes.
         """
-        # Get query parameters
+        # Added caching logic for search results
         filters = {}
         allowed_fields = [
             'user__username', 'user__email', 'first_name', 'last_name', 
@@ -159,6 +189,7 @@ class DriverViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(driver, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+                cache.delete(f"driver_{driver.id}")  # Invalidate cache after updating video
                 return Response(serializer.data, status=200)
             return Response(serializer.errors, status=400)
 
