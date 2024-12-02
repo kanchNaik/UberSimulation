@@ -93,10 +93,18 @@ WSGI_APPLICATION = 'uberapi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # Database engine
+        'NAME': 'uber',         # Name of the database
+        'USER': 'root',              # MySQL username
+        'PASSWORD': 'KanchAsNa@020667',          # MySQL password
+        'HOST': 'localhost',                  # Database host, use '127.0.0.1' for localhost
+        'PORT': '3306',                       # Default MySQL port
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
+
 
 
 # Password validation
@@ -142,3 +150,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# from django.db import connection
+
+# with connection.cursor() as cursor:
+#     cursor.execute("PRAGMA journal_mode=WAL;")
+
+# with connection.cursor() as cursor:
+#     cursor.execute("PRAGMA cache_size = -64000;")  # 64MB cache
+
+# with connection.cursor() as cursor:
+#     cursor.execute("PRAGMA synchronous = OFF;")
