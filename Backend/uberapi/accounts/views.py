@@ -35,7 +35,14 @@ class LoginViewSet(viewsets.ViewSet):
             return Response({
                 "refresh": str(refresh),
                 "access": access_token,
-                "user_id": user.id,
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "is_customer": user.is_customer,
+                    "is_driver": user.is_driver,
+                    "name": user.first_name
+                }
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

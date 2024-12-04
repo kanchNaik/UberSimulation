@@ -86,6 +86,7 @@ class DriverRegistrationSerializer(serializers.ModelSerializer):
 
         # Create user
         user = User.objects.create(username=username, email=email)
+        user.is_driver = True
         if password:
             user.set_password(password)
         user.save()
