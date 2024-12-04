@@ -37,11 +37,11 @@ const Billing = () => {
         <div className="billing-details">
           <div className="trip-info">
             <div className="driver-info">
-              {/* <img src={driverPlaceholder} alt="Driver" className="driver-image" /> */}
+              <img src={driverPlaceholder} alt="Driver" className="driver-image" />
               <p>Driver: Sammy Spartan</p>
             </div>
             <div className="map">
-              {/* <img src={mapPlaceholder} alt="Trip Map" /> */}
+              <img src={mapPlaceholder} alt="Trip Map" />
             </div>
           </div>
 

@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import Header from '../../Common/Header/CustomerHeader/Header'; // Importing reusable header
 import './Billing.css'; // Billing styles
-// import mapPlaceholder from './map-placeholder.jpg'; // Map image placeholder
-// import driverPlaceholder from './driver-placeholder.jpg'; // Driver image placeholder
+import mapPlaceholder from './map-placeholder.jpg'; // Map image placeholder
+import driverPlaceholder from './driver-placeholder.jpg'; // Driver image placeholder
 
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Billing component displays a summary of a completed ride.
+ * It includes details such as the billed amount, trip request date,
+ * pickup and dropoff locations, and payment information.
+ * It also provides a breakdown of the fare and trip statistics.
+ * The component is styled using the Billing.css stylesheet.
+ */
+/******  ad952d71-ed65-4b96-ac67-7375a612bbe4  *******/
 const Billing = () => {
   return (
     <div className="billing-page">
@@ -37,11 +46,11 @@ const Billing = () => {
         <div className="billing-details">
           <div className="trip-info">
             <div className="driver-info">
-              {/* <img src={driverPlaceholder} alt="Driver" className="driver-image" /> */}
+              <img src={driverPlaceholder} alt="Driver" className="driver-image" />
               <p>Driver: Sammy Spartan</p>
             </div>
             <div className="map">
-              {/* <img src={mapPlaceholder} alt="Trip Map" /> */}
+              <img src={mapPlaceholder} alt="Trip Map" />
             </div>
           </div>
 

@@ -41,7 +41,7 @@ const Billing = () => {
               <p>Driver: Sammy Spartan</p>
             </div>
             <div className="map">
-              {/* <img src={mapPlaceholder} alt="Trip Map" /> */}
+              <img src={mapPlaceholder} alt="Trip Map" />
             </div>
           </div>
 

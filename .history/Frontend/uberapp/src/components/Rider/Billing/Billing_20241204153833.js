@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Header from '../../Common/Header/CustomerHeader/Header'; // Importing reusable header
 import './Billing.css'; // Billing styles
-// import mapPlaceholder from './map-placeholder.jpg'; // Map image placeholder
-// import driverPlaceholder from './driver-placeholder.jpg'; // Driver image placeholder
+import mapPlaceholder from './map-placeholder.jpg'; // Map image placeholder
+import driverPlaceholder from './driver-placeholder.jpg'; // Driver image placeholder
 
 const Billing = () => {
   return (
@@ -41,7 +41,7 @@ const Billing = () => {
               <p>Driver: Sammy Spartan</p>
             </div>
             <div className="map">
-              {/* <img src={mapPlaceholder} alt="Trip Map" /> */}
+              <img src={mapPlaceholder} alt="Trip Map" />
             </div>
           </div>
 
