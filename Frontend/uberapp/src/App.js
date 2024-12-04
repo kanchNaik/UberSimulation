@@ -6,8 +6,12 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 //All components import
 import Home from "./components/Home/Home";
 import Login from "./components/Auth/Login/Login";
+
 import CustomerSignup from "./components/Auth/Signup/CustomerSignup";
 import DriverSignup from "./components/Auth/Signup/DriverSignup";
+
+import PaymentList from "./components/Payments/PaymentList";
+import AddPaymentMethod from "./components/Payments/AddPaymentMethod";
 
 function App() {
   return (
@@ -22,6 +26,8 @@ function App() {
           <Route path="/customer/signup" element={<CustomerSignup />} />
 
           <Route path="/driver/signup" element={<DriverSignup />} />
+          <Route path="/customer/payments" element={<PaymentList />} />
+          <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
         </Routes>
         </div>
