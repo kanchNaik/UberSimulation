@@ -1,5 +1,5 @@
 import React from "react";
-import "./../styles/RideFormStyles.css";
+import "./RideFormStyles.css";
 
 const RideForm = () => {
   return (

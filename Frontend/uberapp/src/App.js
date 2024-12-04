@@ -1,7 +1,7 @@
 import React from "react";
-import Header from "./components/Header";
-import RideForm from "./components/RideForm";
-import Map from "./components/Map";
+import Header from "./components/Common/Header/CustomerHeader/Header";
+import RideForm from "./components/Common/Ride/RideForm";
+import Map from "./components/Common/Map/Map";
 import GlobalStyles from "./styles/GlobalStyles";
 
 function App() {
@@ -9,8 +9,8 @@ function App() {
     <>
       <GlobalStyles />
       <div className="App">
-        <Header />
         <div className="main-content">
+          <Header />
           <RideForm />
           <Map />
         </div>
