@@ -1,0 +1,24 @@
+.map-container {
+    flex-grow: 1;
+    height: 600px;
+    border-radius: 10px;
+    background-color: #e9ecef;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .map-placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .map-container {
+    flex-grow: 1;
+    height: 600px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  
