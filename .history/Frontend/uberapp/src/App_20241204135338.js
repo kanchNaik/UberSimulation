@@ -4,7 +4,6 @@ import RideForm from "./components/Common/Ride/RideForm";
 import Map from "./components/Common/Map/Map";
 import GlobalStyles from "./styles/GlobalStyles";
 import TripsList from "./components/Rider/Trips/TripsList";
-import Billing from "./components/Rider/Billing/Billing";
 function App() {
   return (
     <>
@@ -15,7 +14,6 @@ function App() {
           {/* <RideForm />
           <Map /> */}
           <TripsList/>
-          {/* <Billing/> */}
         </div>
       </div>
     </>

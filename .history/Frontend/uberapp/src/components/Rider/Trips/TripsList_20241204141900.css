@@ -1,0 +1,184 @@
+/* Ensure body and html take up the full height */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.uber-trips-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.uber-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.uber-main {
+  display: flex;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  gap: 20px;
+}
+
+/* Sidebar Section */
+.sidebar {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.promo-image {
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.request-ride-button {
+  padding: 10px 20px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.request-ride-button:hover {
+  background-color: #333;
+}
+
+/* Trips Content Section */
+.trips-content {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Upcoming Trips Section */
+.upcoming-trips {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.trip-banner {
+  display: flex;
+  align-items: center;
+}
+
+.trip-banner img {
+  width: 150px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.trip-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.reserve-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #ddd;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reserve-button:hover {
+  background-color: #bbb;
+}
+
+/* Past Trips Section */
+.past-trips {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.trip-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-button {
+  padding: 10px 15px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.filter-button:hover {
+  background-color: #e0e0e0;
+}
+
+.past-trip-item {
+  display: flex;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.past-trip-map img {
+  width: 150px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 20px;
+}
+
+.past-trip-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.past-trip-info h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.past-trip-info p {
+  margin: 5px 0;
+}
+
+.past-trip-buttons button {
+  margin: 5px 5px 0 0;
+  padding: 8px 15px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.past-trip-buttons button:hover {
+  background-color: #bbb;
+}

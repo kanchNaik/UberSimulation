@@ -15,7 +15,7 @@ function App() {
           {/* <RideForm />
           <Map /> */}
           <TripsList/>
-          {/* <Billing/> */}
+          <Billing/>
         </div>
       </div>
     </>

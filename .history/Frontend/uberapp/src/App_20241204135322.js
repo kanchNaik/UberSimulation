@@ -3,8 +3,17 @@ import Header from "./components/Common/Header/CustomerHeader/Header";
 import RideForm from "./components/Common/Ride/RideForm";
 import Map from "./components/Common/Map/Map";
 import GlobalStyles from "./styles/GlobalStyles";
-import TripsList from "./components/Rider/Trips/TripsList";
-import Billing from "./components/Rider/Billing/Billing";
+import Trips from "./components/Rider/Trips/TripsList";
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * App component.
+ *
+ * Returns the main app component. It renders the global styles
+ * and the main content div with the TripsList component.
+ *
+ * @return {ReactElement} The App component.
+ */
+/******  38c327d3-4516-49c6-9c5c-8615109fd64c  *******/
 function App() {
   return (
     <>
@@ -15,7 +24,6 @@ function App() {
           {/* <RideForm />
           <Map /> */}
           <TripsList/>
-          {/* <Billing/> */}
         </div>
       </div>
     </>

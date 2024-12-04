@@ -3,8 +3,7 @@ import Header from "./components/Common/Header/CustomerHeader/Header";
 import RideForm from "./components/Common/Ride/RideForm";
 import Map from "./components/Common/Map/Map";
 import GlobalStyles from "./styles/GlobalStyles";
-import TripsList from "./components/Rider/Trips/TripsList";
-import Billing from "./components/Rider/Billing/Billing";
+import Trips from "./components/Rider/Trips/TripsList";
 function App() {
   return (
     <>
@@ -14,8 +13,7 @@ function App() {
           {/* <Header /> */}
           {/* <RideForm />
           <Map /> */}
-          <TripsList/>
-          {/* <Billing/> */}
+          <Trips/>
         </div>
       </div>
     </>

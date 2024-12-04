@@ -14,7 +14,7 @@ function App() {
           {/* <Header /> */}
           {/* <RideForm />
           <Map /> */}
-          <TripsList/>
+          {/* <TripsList/> */}
           {/* <Billing/> */}
         </div>
       </div>

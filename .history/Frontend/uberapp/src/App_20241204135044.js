@@ -1,28 +1,26 @@
-import React from "react";
-import Header from "./components/Common/Header/CustomerHeader/Header";
-import RideForm from "./components/Common/Ride/RideForm";
-import Map from "./components/Common/Map/Map";
-import GlobalStyles from "./styles/GlobalStyles";
-import TripsList from "./components/Rider/Trips/TripsList";
-import Billing from "./components/Rider/Billing/Billing";
-function App() {
-  return (
-    <>
-      <GlobalStyles />
-      <div className="App">
-        <div className="main-content">
-          {/* <Header /> */}
-          {/* <RideForm />
-          <Map /> */}
-          <TripsList/>
-          {/* <Billing/> */}
-        </div>
-      </div>
-    </>
-  );
-}
+// import React from "react";
+// import Header from "./components/Common/Header/CustomerHeader/Header";
+// import RideForm from "./components/Common/Ride/RideForm";
+// import Map from "./components/Common/Map/Map";
+// import GlobalStyles from "./styles/GlobalStyles";
+// import Trips from "./components/Rider/Trips/Trips";
+// function App() {
+//   return (
+//     <>
+//       <GlobalStyles />
+//       <div className="App">
+//         <div className="main-content">
+//           <Header />
+//           {/* <RideForm />
+//           <Map /> */}
+//           <Trips/>
+//         </div>
+//       </div>
+//     </>
+//   );
+// }
 
-export default App;
+// export default App;
 
 
 // import React from "react";
