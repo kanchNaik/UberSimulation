@@ -1,0 +1,18 @@
+/* FeaturesStyles.css */
+.features {
+    padding: 50px 20px;
+    text-align: center;
+}
+.features-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.feature {
+    width: 200px;
+    text-align: center;
+}
+.icon {
+    font-size: 50px;
+    margin-bottom: 10px;
+}

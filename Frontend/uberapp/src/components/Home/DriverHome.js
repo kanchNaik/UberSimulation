@@ -1,8 +1,14 @@
 import React from 'react'
-
+import Header from "../Common/Header/DriverHeader/Header";
+import Footer from "../Common/Footer/Footer";
+import Dashboard from "../DriverDashboard/Dashboard";
 function DriverHome() {
   return (
-    <div>DriverHome</div>
+    <>
+    <Header />
+    <Dashboard />
+    <Footer />
+    </>
   )
 }
 
