@@ -1,8 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "./ConfirmRequest.css";
 import uberX from "../ChooseRide/uberx.jpg"; // Ensure this path is correct
 
 const ConfirmRequest = ({ onClose }) => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handleConfirm = () => {
+    navigate("/customer/payments/add"); // Navigate to AddPaymentMethod page
+  };
+
   return (
     <div className="confirm-request-wrapper">
       {/* Overlay */}
@@ -38,7 +45,9 @@ const ConfirmRequest = ({ onClose }) => {
           <button className="cancel-button" onClick={onClose}>
             Cancel
           </button>
-          <button className="confirm-button">Confirm and request</button>
+          <button className="confirm-button" onClick={handleConfirm}>
+            Confirm and request
+          </button>
         </div>
       </div>
     </div>
