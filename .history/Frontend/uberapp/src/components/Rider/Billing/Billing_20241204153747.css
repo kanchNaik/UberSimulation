@@ -1,0 +1,117 @@
+.billing-page {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .header-content {
+    margin: 20px auto;
+    max-width: 1000px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #d2d2d2;
+  }
+  
+  h2 {
+    color: #0055A2;
+    font-weight: bold;
+  }
+  
+  .billing-overview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #d2d2d2;
+    padding-bottom: 10px;
+    margin-top: 10px;
+  }
+  
+  .overview-item {
+    margin-bottom: 10px;
+    flex: 1 1 calc(20% - 10px);
+  }
+  
+  .billed-amount span {
+    color: #E5A823;
+    font-weight: bold;
+  }
+  
+  .billing-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  .trip-info {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .driver-info {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+  }
+  
+  .driver-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .map img {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  .fare-breakdown, .trip-statistics {
+    margin-top: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .fare-breakdown table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .fare-breakdown td {
+    padding: 5px 0;
+    border-bottom: 1px solid #d2d2d2;
+  }
+  
+  .fare-breakdown .total td {
+    font-weight: bold;
+    color: #0055A2;
+  }
+  
+  .trip-statistics p {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+  }
+  
+  span {
+    font-weight: bold;
+  }
+  
