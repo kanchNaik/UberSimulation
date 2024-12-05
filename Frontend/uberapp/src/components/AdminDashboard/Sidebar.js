@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import "./Sidebar.css";
+import "./Sidebar.css"; // Updated styling for Sidebar
 import { FaBars, FaUser, FaCar, FaReceipt, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // Default state: closed
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prevState) => !prevState); // Toggle sidebar state
   };
 
   return (
-    <div className="sidebar-container">
+    <div className="sidebar-wrapper">
       {/* Menu Icon */}
       <div className="menu-icon" onClick={toggleSidebar}>
         <FaBars />
@@ -20,8 +20,15 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
-        <div>
+              <button className="close-sidebar" onClick={toggleSidebar}>
+            ✖
+          </button>
+        <div className="sidebar-header">
           <h2>Uber Admin</h2>
+    
+        </div>
+  
+        <div className="sidebar-options">
           <ul>
             <li>
               <Link to="/admin/dashboard">
@@ -45,7 +52,7 @@ const Sidebar = () => {
             </li>
           </ul>
         </div>
-        <div>
+        <div className="sidebar-footer">
           <ul>
             <li>
               <Link to="/settings">
