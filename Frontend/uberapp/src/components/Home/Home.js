@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../Common/Header/CustomerHeader/Header";
 import RideForm from "../Common/Ride/RideForm";
 import Map from "../Common/Map/Map";
+import ChooseRide from "../Rider/ChooseRide/ChooseRide";
+
 function Home() {
+  const [showChooseRide, setShowChooseRide] = useState(false);
+
+  const handleSearchClick = () => {
+    setShowChooseRide(true);
+  };
+
+  const handleCloseChooseRide = () => {
+    setShowChooseRide(false);
+  };
+
   return (
     <>
       <Header />
@@ -13,13 +25,15 @@ function Home() {
           justifyContent: "space-between",
           alignItems: "flex-start",
           padding: "20px",
-          gap: "20px", 
+          gap: "20px",
         }}
       >
-        <RideForm />
+        <RideForm onSearch={handleSearchClick} />
         <Map />
-
       </div>
+
+      {/* Render ChooseRide modal if showChooseRide is true */}
+      {showChooseRide && <ChooseRide onClose={handleCloseChooseRide} />}
     </>
   );
 }

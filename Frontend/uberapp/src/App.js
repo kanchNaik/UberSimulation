@@ -15,6 +15,9 @@ import PaymentList from "./components/Payments/PaymentList";
 import AddPaymentMethod from "./components/Payments/AddPaymentMethod";
 import CustomerProfile from "./components/UserProfile/CustomerProfile";
 import DriverProfile from "./components/UserProfile/DriverProfile";
+import TripsList from "./components/Rider/Trips/TripsList";
+import Billing from "./components/Rider/Billing/Billing";  
+import ChooseRide from "./components/Rider/ChooseRide/ChooseRide";
 
 window.store = store;
 
@@ -29,13 +32,17 @@ function App() {
           <Route path="/customer/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
-          <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
-          <Route path="/customer/payments" element={<PaymentList />} />
-          <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
-
-          <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/driver" element={<Driver/>} />
           <Route path="/driver/home" element={<DriverHome />} />
+          <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
+          <Route path="/customer/trips" element={<TripsList />} />
+          <Route path="/customer/billing" element={<Billing />} />
+
+          <Route path="/customer/chooseride" element={<ChooseRide />} />
+
+          <Route path="/driver/signup" element={<DriverSignup />} />
+          <Route path="/customer/payments" element={<PaymentList />} />
+          <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
           <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
         </Routes>
