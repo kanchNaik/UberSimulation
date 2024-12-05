@@ -9,7 +9,8 @@ import Login from "./components/Auth/Login/Login";
 
 import CustomerSignup from "./components/Auth/Signup/CustomerSignup";
 import DriverSignup from "./components/Auth/Signup/DriverSignup";
-
+import Driver from "./components/Home/Driver";
+import DriverHome from "./components/Home/DriverHome";
 import PaymentList from "./components/Payments/PaymentList";
 import AddPaymentMethod from "./components/Payments/AddPaymentMethod";
 
@@ -24,7 +25,8 @@ function App() {
           <Route path="/customer/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
-
+          <Route path="/driver" element={<Driver/>} />
+          <Route path="/driver/home" element={<DriverHome />} />
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />
           <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
