@@ -27,7 +27,6 @@ function App() {
       <div className="App">
         <div className="main-content">
         <Routes> 
-        
           <Route path="/" element={<Navigate to="/uberhome" replace />} />
 
           {/* Auth Routes  */}
@@ -39,15 +38,16 @@ function App() {
           <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
           <Route path="/customer/trips" element={<TripsList />} />
           <Route path="/customer/billing" element={<Billing />} />
-          <Route path="/customer/payments" element={<PaymentList />} />
-          <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
 
-          {/* Driver Routes */}
+
           <Route path="/driver" element={<Driver/>} />
           <Route path="/driver/home" element={<DriverHome />} />
-          <Route path="/driver/signup" element={<DriverSignup />} />
-          <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
 
+
+          <Route path="/driver/signup" element={<DriverSignup />} />
+          <Route path="/customer/payments" element={<PaymentList />} />
+          <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
+          <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
         </Routes>
         </div>

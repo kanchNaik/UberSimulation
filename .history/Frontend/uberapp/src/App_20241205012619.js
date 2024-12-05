@@ -27,7 +27,6 @@ function App() {
       <div className="App">
         <div className="main-content">
         <Routes> 
-        
           <Route path="/" element={<Navigate to="/uberhome" replace />} />
 
           {/* Auth Routes  */}
