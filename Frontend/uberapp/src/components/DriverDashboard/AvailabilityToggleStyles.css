@@ -1,0 +1,19 @@
+/* AvailabilityToggleStyles.css */
+.availability-toggle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.toggle-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    border-radius: 5px;
+}
+.online {
+    background-color: green;
+}
+.offline {
+    background-color: red;
+}

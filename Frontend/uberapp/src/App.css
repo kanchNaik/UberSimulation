@@ -85,3 +85,21 @@ body {
   background: #e9ecef;
   border-radius: 10px;
 }
+.main-content {
+  justify-content: space-between; /* Space between ride form and map */
+  align-items: flex-start;
+  padding: 20px 40px; /* Add consistent padding */
+}
+
+.ride-form-container {
+  flex: 0 0 30%; /* Ride form takes up 30% of the width */
+  max-width: 350px;
+}
+
+.map-container {
+  flex: 1; /* Map takes the remaining width */
+  height: 600px; /* Ensure proper height for the map */
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #e9ecef; /* Fallback if map fails to load */
+}

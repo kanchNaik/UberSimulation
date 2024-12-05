@@ -1,0 +1,17 @@
+/* HeroSectionStyles.css */
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background: url("bg.png") no-repeat center center;
+    background-size: cover;
+    color: #fff;
+}
+.cta-button {
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+}

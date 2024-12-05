@@ -9,7 +9,6 @@ const GlobalStyles = createGlobalStyle`
 
   body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
     color: #333;
   }
 
@@ -21,7 +20,6 @@ const GlobalStyles = createGlobalStyle`
   }
 
   .main-content {
-    display: flex;
     gap: 20px;
     justify-content: space-between;
   }

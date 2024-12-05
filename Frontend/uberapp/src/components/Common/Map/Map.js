@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from "react";
+import "./MapStyles.css";
 import {
   GoogleMap,
   useJsApiLoader,

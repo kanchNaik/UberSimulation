@@ -7,6 +7,7 @@ from accounts.models import User
 from accounts.serializers import LoginSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
+from datetime import timedelta
 
 class LoginViewSet(viewsets.ViewSet):
     """
@@ -31,11 +32,26 @@ class LoginViewSet(viewsets.ViewSet):
             # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
+            refresh.set_exp(lifetime=timedelta(days=7))
+
+            userid=""
+            if user.is_customer:
+                userid = user.customer_profile.id
+            elif user.is_driver:
+                userid = user.driver_profile.id
 
             return Response({
                 "refresh": str(refresh),
                 "access": access_token,
-                "user_id": user.id,
+                "user": {
+                    "id": user.id,
+                    "user_id": userid,
+                    "username": user.username,
+                    "email": user.email,
+                    "is_customer": user.is_customer,
+                    "is_driver": user.is_driver,
+                    "name": user.first_name
+                }
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

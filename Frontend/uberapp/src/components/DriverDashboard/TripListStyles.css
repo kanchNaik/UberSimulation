@@ -1,0 +1,16 @@
+/* TripListStyles.css */
+.trip-list {
+    margin-bottom: 20px;
+}
+.trip-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.trip-list th, .trip-list td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+.trip-list th {
+    background-color: #f4f4f4;
+}

@@ -1,0 +1,15 @@
+/* SupportStyles.css */
+.support ul {
+    list-style: none;
+    padding: 0;
+}
+.support li {
+    margin-bottom: 10px;
+}
+.support a {
+    text-decoration: none;
+    color: #007BFF;
+}
+.support a:hover {
+    text-decoration: underline;
+}

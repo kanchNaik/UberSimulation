@@ -81,6 +81,7 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
 
         # Create user
         user = User.objects.create(username=username, email=email)
+        user.is_customer = True
         if password:
             user.set_password(password)
         user.save()
