@@ -1,0 +1,77 @@
+/* Container for homepage */
+.homepage-container {
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    height: 100vh;
+}
+
+/* Title styling */
+.homepage-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Card container for layout */
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Card styling */
+.card {
+    width: 250px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Card hover effect */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Icon styling */
+.card-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #1b1b1b;
+}
+
+/* Title styling */
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Description styling */
+.card-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Button styling */
+.card-button {
+    padding: 10px 20px;
+    background-color: #1b1b1b;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.card-button:hover {
+    background-color: #1b1b1b;
+}

@@ -1,0 +1,108 @@
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar-title {
+    color: #414140;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-menu li {
+    margin: 15px 0;
+    cursor: pointer;
+    color: #fff;
+  }
+  
+  .sidebar-menu li:hover {
+    color: #565554;
+  }
+  
+  /* Dashboard Main Content */
+  .admin-dashboard-container {
+    display: flex;
+  }
+  
+  .dashboard-main-content {
+    margin-left: 250px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    width: 100%;
+  }
+  
+  .dashboard-title {
+    margin-bottom: 20px;
+    color: #000;
+  }
+  
+  /* Filter Bar for Time Period */
+  .time-period-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .time-period-button {
+    padding: 10px 20px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #71706e;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .time-period-button.active {
+    background-color: #ff9800;
+    color: #fff;
+  }
+  
+  /* Chart Container */
+  .chart-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  /* Metric Card Styles */
+  .metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .metric {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    flex: 1 1 calc(25% - 20px);
+    max-width: calc(25% - 20px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .metric h2 {
+    font-size: 18px;
+    color: #000;
+  }
+  
+  .metric p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1b1b1b;
+  }
+  
