@@ -1,0 +1,84 @@
+.confirm-request-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirm-request-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.confirm-request-modal {
+  position: relative;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ride-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.car-image {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+
+.ride-info {
+  text-align: left;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.price h3 {
+  margin: 0;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.confirm-request-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 10px;
+  width: 45%;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  border: none;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.confirm-button {
+  background-color: black;
+  color: white;
+}
