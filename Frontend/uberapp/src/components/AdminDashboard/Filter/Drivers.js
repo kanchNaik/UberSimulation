@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Drivers.css"; // Add a CSS file for styling
+import {BASE_API_URL} from "../../../Setupconstants";
 
 const Drivers = () => {
   const [drivers, setDrivers] = useState([]); // To store all drivers
@@ -23,7 +24,7 @@ const Drivers = () => {
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/drivers"); // Replace with your API endpoint
+        const response = await axios.get(`${BASE_API_URL}/api/drivers`); // Replace with your API endpoint
         setDrivers(response.data);
         setFilteredDrivers(response.data); // Initialize filtered list
       } catch (error) {

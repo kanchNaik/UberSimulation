@@ -1,10 +1,12 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import Bill
-from .serializers import BillSerializer
+from .serializers import BillSerializer, BillSearchSerializer
 from django.utils.timezone import now
 from rest_framework.decorators import action
-from datetime import timedelta
+from datetime import timedelta,datetime
+from django.db.models import Q
+from django.utils.timezone import now
 
 class BillViewSet(viewsets.ModelViewSet):
     """
@@ -86,31 +88,49 @@ class BillViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='search')
     def search_bills(self, request):
         """
-        Custom API to search bills by customer ID, driver ID, ride ID, or date range.
-        If no date range is specified, default to the last month.
+        Custom API to search bills by Bill ID, Ride ID, Driver Name, Customer Name, 
+        Amount, Status, and Date Range.
         """
         # Extract query parameters
-        customer_id = request.query_params.get('customer')
-        driver_id = request.query_params.get('driver')
-        ride_id = request.query_params.get('ride')
-        date_range = request.query_params.get('date_range')  # e.g., "week", "month", "6months", "year"
+        bill_id = request.query_params.get('bill_id')
+        ride_id = request.query_params.get('ride_id')
+        driver_name = request.query_params.get('driver_name')
+        customer_name = request.query_params.get('customer_name')
+        amount = request.query_params.get('amount')
+        billstatus = request.query_params.get('status')
+        date_range = request.query_params.get('date_range')
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
 
         # Start with all bills
         bills = Bill.objects.all()
 
-        # Filter by customer
-        if customer_id:
-            bills = bills.filter(customer__id=customer_id)
+        # Apply filters based on search criteria
+        if bill_id:
+            bills = bills.filter(id=bill_id)
 
-        # Filter by driver
-        if driver_id:
-            bills = bills.filter(driver__id=driver_id)
-
-        # Filter by ride
         if ride_id:
             bills = bills.filter(ride__id=ride_id)
 
-        # Date range logic
+        if driver_name:
+            bills = bills.filter(
+                Q(driver__first_name__icontains=driver_name) |
+                Q(driver__last_name__icontains=driver_name)
+            )
+
+        if customer_name:
+            bills = bills.filter(
+                Q(customer__first_name__icontains=customer_name) |
+                Q(customer__last_name__icontains=customer_name)
+            )
+
+        if amount:
+            bills = bills.filter(amount=amount)
+
+        if billstatus:
+            bills = bills.filter(status__iexact=billstatus)
+
+        # Date range filtering
         today = now().date()
         if date_range:
             if date_range == "day":
@@ -123,14 +143,19 @@ class BillViewSet(viewsets.ModelViewSet):
                 start_date = today - timedelta(days=182)
             elif date_range == "year":
                 start_date = today - timedelta(days=365)
-            else:
-                start_date = today - timedelta(days=30)
             bills = bills.filter(date__gte=start_date)
-        else:
-            # Default to filtering for the last month if no date range is specified
-            start_date = today - timedelta(days=30)
-            bills = bills.filter(date__gte=start_date)
+        elif start_date and end_date:
+            # Custom date range
+            try:
+                start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end = datetime.strptime(end_date, '%Y-%m-%d').date()
+                bills = bills.filter(date__range=[start, end])
+            except ValueError:
+                return Response(
+                    {"error": "Invalid date format. Use YYYY-MM-DD"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         # Serialize the filtered bills
-        serializer = BillSerializer(bills, many=True)
+        serializer = BillSearchSerializer(bills, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

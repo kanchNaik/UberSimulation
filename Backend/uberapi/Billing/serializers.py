@@ -39,3 +39,24 @@ class BillSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+class BillSearchSerializer(serializers.ModelSerializer):
+    driver_full_name = serializers.SerializerMethodField()
+    customer_full_name = serializers.SerializerMethodField()
+
+    class Meta:
+            model = Bill
+            fields = ['bill_id', 'driver',
+            'customer',
+            'ride', 'amount', 'status', 'date', 
+                    'driver_full_name', 'customer_full_name']
+
+    def get_driver_full_name(self, obj):
+            if obj.driver:
+                return f"{obj.driver.first_name} {obj.driver.last_name}"
+            return ""
+
+    def get_customer_full_name(self, obj):
+            if obj.customer:
+                return f"{obj.customer.first_name} {obj.customer.last_name}"
+            return ""

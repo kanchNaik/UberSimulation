@@ -5,6 +5,10 @@ from .serializers import RideSerializer, RideEventImageSerializer, ReviewSeriali
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from customer.models import Customer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import AllowAny
 
 class RideViewSet(viewsets.ModelViewSet):
     """
@@ -12,6 +16,15 @@ class RideViewSet(viewsets.ModelViewSet):
     """
     queryset = Ride.objects.all()
     serializer_class = RideSerializer
+    def get_permissions(self):
+        if self.action == 'create' or self.action == 'list':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_authentication_classes(self):
+        if self.action == 'create' or self.action == 'list':
+            return []
+        return [JWTAuthentication()]
 
     def list(self, request):
         """
