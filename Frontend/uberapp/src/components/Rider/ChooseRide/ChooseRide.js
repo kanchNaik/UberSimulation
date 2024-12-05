@@ -28,8 +28,6 @@ const ChooseRide = ({ onClose }) => {
             ✖
           </button>
         </div>
-        <p className="promotion-text">15% promotion applied</p>
-
         {/* Scrollable Ride Options */}
         <div className="ride-options-container">
           {/* Recommended */}
@@ -163,9 +161,9 @@ const ChooseRide = ({ onClose }) => {
         <div className="ride-footer">
           <div className="payment-info">
             <img className="payment-logo" src={applePay} alt="Apple Pay" />
-            <p>Apple Pay • Personal</p>
+            <center><p>Apple Pay • Personal</p></center>
           </div>
-          <center><button className="request-ride-button">Request UberX</button></center>
+          <center><button className="request-ride-button">Request</button></center>
         </div>
       </div>
     </div>
