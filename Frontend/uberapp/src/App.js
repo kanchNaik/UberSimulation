@@ -18,7 +18,6 @@ import CustomerProfile from "./components/UserProfile/CustomerProfile";
 import DriverProfile from "./components/UserProfile/DriverProfile";
 import TripsList from "./components/Rider/Trips/TripsList";
 import Billing from "./components/Rider/Billing/Billing";  
-import ChooseRide from "./components/Rider/ChooseRide/ChooseRide";
 import Users from "./components/AdminDashboard/Users";
 import Drivers from "./components/AdminDashboard/Drivers";
 import Rides from "./components/AdminDashboard/Rides";
@@ -31,18 +30,20 @@ function App() {
       <div className="App">
         <div className="main-content">
         <Routes> 
+        
           <Route path="/" element={<Navigate to="/uberhome" replace />} />
-          <Route path="/customer/home" element={<Home />} />
+
+          {/* Auth Routes  */}
           <Route path="/login" element={<Login />} />
+          
+          {/* Customer Routes */} 
+          <Route path="/customer/home" element={<Home />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
-          <Route path="/driver" element={<Driver/>} />
-          <Route path="/driver/home" element={<DriverHome />} />
           <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
           <Route path="/customer/trips" element={<TripsList />} />
           <Route path="/customer/billing" element={<Billing />} />
           <Route path="/admin/home" element={<AdminHome />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/customer/chooseride" element={<ChooseRide />} />
           <Route path="/admin/usersinfo" element={<Users />} />
           <Route path="/admin/driversinfo" element={<Drivers />} />
           <Route path="/admin/ridesinfo" element={<Rides />} />
@@ -50,7 +51,13 @@ function App() {
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />
           <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
+
+          {/* Driver Routes */}
+          <Route path="/driver" element={<Driver/>} />
+          <Route path="/driver/home" element={<DriverHome />} />
+          <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
+
           <Route path="*" element={<h1>404 Not Found</h1>}/>
         </Routes>
         </div>

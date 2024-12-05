@@ -33,19 +33,22 @@
     overflow-y: auto;
   }
   
+  /* Header */
   .choose-ride-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
   }
+
   
   .choose-ride-header h2 {
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     margin: 0;
-    color: black;
+    color: #000000;
     font-weight: bold;
   }
+
   
   .close-sidebar {
     background: none;
@@ -54,32 +57,20 @@
     cursor: pointer;
   }
   
+  /* Promotion Text */
   .promotion-text {
     font-size: 1rem;
     color: #333;
     margin-bottom: 10px;
   }
   
-  .leave-now {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 20px;
-  }
-  
-  .ride-category {
-    font-size: 1.2rem;
-    margin: 20px 0 10px;
-    font-weight: bold;
-  }
-  
-  /* Ride Options Container */
+  /* Ride Options */
   .ride-options-container {
     display: flex;
     flex-direction: column;
     gap: 15px;
   }
   
-  /* Individual Ride Option */
   .ride-option {
     display: flex;
     align-items: center;
@@ -93,7 +84,7 @@
     background-color: #f9f9f9;
   }
   
-  /* Car Image Styling */
+  /* Image Styling */
   .car-image {
     width: 60px;
     height: auto;
@@ -101,7 +92,7 @@
     border-radius: 4px;
   }
   
-  /* Ride Information */
+  /* Ride Info */
   .ride-info {
     flex-grow: 1;
     display: flex;
@@ -121,25 +112,26 @@
     font-size: 0.9rem;
   }
   
-  /* Price Styling */
+  /* Price */
   .price {
     font-size: 1.2rem;
     font-weight: bold;
     color: #333;
+    margin-left: auto;
   }
   
-  /* Scrollbar Customization */
-  .choose-ride-sidebar::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .choose-ride-sidebar::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 5px;
-  }
-  
-  .choose-ride-sidebar::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
+  /* Footer */
+  .ride-footer {
+    position: sticky;
+    bottom: 0;
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
   
   .payment-info {
@@ -158,3 +150,21 @@
     font-size: 0.9rem;
     color: #333;
   }
+  
+  .request-ride-button {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: center;
+  }
+  
+  .request-ride-button:hover {
+    background-color: #333;
+  }
+  
