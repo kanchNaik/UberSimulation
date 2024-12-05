@@ -8,23 +8,23 @@ const Header = () => {
       <div className="logo">Uber</div>
       <nav className="nav">
         <ul>
-          <li>
+          <li aria-label="Ride option">
             <FaCar /> Ride
           </li>
-          <li>
+          <li aria-label="Rent option">
             <FaCar /> Rent
           </li>
-          <li>
+          <li aria-label="Package delivery option">
             <FaBox /> Package
           </li>
-          <li>
+          <li aria-label="Hourly booking option">
             <FaCar /> Hourly
           </li>
         </ul>
       </nav>
       <div className="profile">
         <span>My trips</span>
-        <FaUserCircle className="profile-icon" />
+        <FaUserCircle className="profile-icon" aria-label="Profile icon" />
       </div>
     </header>
   );

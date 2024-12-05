@@ -15,8 +15,8 @@
   }
   
   .map-container {
-    flex-grow: 1;
-    height: 600px;
+    flex-grow: 1; /* Map takes the remaining space */
+    height: 600px; /* Ensure it aligns with the form height */
     border-radius: 10px;
     overflow: hidden;
     position: relative;
