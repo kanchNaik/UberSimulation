@@ -9,6 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+from rides.models import Ride
+from Billing.models import Bill
+from django.db.models import Sum, Avg, Count
+from django.utils.timezone import now, timedelta
 
 class DriverViewSet(viewsets.ModelViewSet):
     """
@@ -163,8 +168,83 @@ class DriverViewSet(viewsets.ModelViewSet):
         except Driver.DoesNotExist:
             return Response({"error": "Driver not found."}, status=404)
     
+    @action(detail=True, methods=['get'], url_path='stats')
+    def get_driver_stats(self, request, pk=None):
+        try:
+            # Fetch the driver
+            driver = Driver.objects.get(id=pk)
+            print(driver)
+            # Total trips
+            total_trips = Ride.objects.filter(driver=driver).count()
 
+            # Total earnings
+            total_earnings = Bill.objects.filter(driver=driver, status='paid').aggregate(Sum('amount'))['amount__sum'] or 0
+
+            # Average rating
+            average_rating = driver.rating or 0
+
+            # Recent trips
+            recent_trips = Ride.objects.filter(driver=driver).order_by('-date_time')[:5]
+            recent_trips_data = [
+                {
+                    'ride_id': str(ride.ride_id),
+                    'pickup': str(ride.pickup_location), 
+                    'dropoff': str(ride.dropoff_location),
+                    'fare': ride.fare,
+                    'date': ride.date_time,
+                }
+                for ride in recent_trips
+            ]
+
+            # Earnings breakdown
+            today = now().date()
+            daily_earnings = Bill.objects.filter(driver=driver, status='paid', date=today).aggregate(Sum('amount'))['amount__sum'] or 0
+            weekly_earnings = Bill.objects.filter(driver=driver, status='paid', date__gte=today - timedelta(days=7)).aggregate(Sum('amount'))['amount__sum'] or 0
+            monthly_earnings = Bill.objects.filter(driver=driver, status='paid', date__gte=today - timedelta(days=30)).aggregate(Sum('amount'))['amount__sum'] or 0
+
+            # Response data
+            data = {
+                'total_trips': total_trips,
+                'total_earnings': total_earnings,
+                'average_rating': average_rating,
+                'recent_trips': recent_trips_data,
+                'earnings_breakdown': {
+                    'daily': daily_earnings,
+                    'weekly': weekly_earnings,
+                    'monthly': monthly_earnings,
+                },
+            }
+
+            return Response(data)
+
+        except Driver.DoesNotExist:
+            return Response({'error': 'Driver not found'}, status=404)
     
+    @action(detail=True, methods=['get'], url_path='getstatus')
+    def get_driveractivestatus(self, request, pk=None):
+        try:
+            driver = Driver.objects.get(pk=pk)
+            return Response(driver.is_available)
+        except Driver.DoesNotExist:
+            return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=True, methods=['get'], url_path='setactive')
+    def set_active(self, request, pk=None):
+        try:
+            driver = Driver.objects.get(pk=pk)
+            driver.is_available = True
+            driver.save()
+            return Response({"message": "Driver activated successfully"}, status=status.HTTP_200_OK)
+        except Driver.DoesNotExist:
+            return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
 
-
+    @action(detail=True, methods=['get'], url_path='setdeactive')
+    def set_deactive(self, request, pk=None):
+        try:
+            driver = Driver.objects.get(pk=pk)
+            driver.is_available = False
+            driver.save()
+            return Response({"message": "Driver de-activated successfully"}, status=status.HTTP_200_OK)
+        except Driver.DoesNotExist:
+            return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
 

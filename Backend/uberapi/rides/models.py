@@ -29,6 +29,8 @@ class Ride(models.Model):
     # Foreign keys to Customer and Driver
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='rides')
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='rides')
+    fare = models.FloatField()
+    distance = models.FloatField()
 
     def __str__(self):
         return f"Ride {self.ride_id} - Customer {self.customer.id}, Driver {self.driver.id}"
