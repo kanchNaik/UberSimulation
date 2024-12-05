@@ -1,33 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { Line, Bar, Pie } from "react-chartjs-2";
 import "chart.js/auto";
-import "./Dashboard.css"; // Import your CSS
+import "./Dashboard.css";
 import Cookies from "js-cookie";
-import { BASE_API_URL } from "../../Setupconstants"; // Replace with your actual constants file
+import { BASE_API_URL } from "../../Setupconstants";
 
 const AdminDashboard = () => {
   const [timePeriod, setTimePeriod] = useState("Day");
   const [dashboardData, setDashboardData] = useState({
-    revenue: [],
-    timeLabels: [],
-    ridesPerArea: [],
-    ridesPerDriver: [],
-    ridesPerCustomer: [],
-    totalUsers: 0,
-    totalDrivers: 0,
-    totalRides: 0,
-    revenueSummary: 0,
+    revenue_per_unit: [],
+    rides_per_area: [],
+    rides_per_driver: [],
+    total_rides: 0,
+    total_revenue: 0,
+    avg_rides_per_customer: 0,
+    avg_rides_per_driver: 0,
+    total_active_drivers: 0,
+    total_active_customers: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [openWeatherApiKey] = useState("YOUR_OPENWEATHER_API_KEY");
 
   const token = Cookies.get("access_token");
+
+  const getCityName = async (lat, lon) => {
+    try {
+      const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${openWeatherApiKey}`);
+      const data = await response.json();
+      return data[0]?.name || `${lat}, ${lon}`;
+    } catch (error) {
+      console.error("Error fetching city name:", error);
+      return `${lat}, ${lon}`;
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `${BASE_API_URL}/api/admin/dashboard?timePeriod=${timePeriod}`,
+          `${BASE_API_URL}/api/administrator/statistics/report?timePeriod=${timePeriod}`,
           {
             method: "GET",
             headers: {
@@ -42,16 +54,19 @@ const AdminDashboard = () => {
         }
 
         const data = await response.json();
+        
+        // Fetch city names for each area
+        const ridesPerAreaWithCityNames = await Promise.all(
+          data.rides_per_area.map(async (item) => {
+            const cityName = await getCityName(item.pickup_location__latitude, item.pickup_location__longitude);
+            console.log(cityName);
+            return { ...item, area_name: cityName };
+          })
+        );
+
         setDashboardData({
-          revenue: data.revenue,
-          timeLabels: data.timeLabels,
-          ridesPerArea: data.ridesPerArea,
-          ridesPerDriver: data.ridesPerDriver,
-          ridesPerCustomer: data.ridesPerCustomer,
-          totalUsers: data.totalUsers,
-          totalDrivers: data.totalDrivers,
-          totalRides: data.totalRides,
-          revenueSummary: data.revenueSummary,
+          ...data,
+          rides_per_area: ridesPerAreaWithCityNames,
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -61,10 +76,11 @@ const AdminDashboard = () => {
     };
 
     fetchDashboardData();
-  }, [timePeriod]);
+  }, [timePeriod, openWeatherApiKey, token]);
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
@@ -84,33 +100,29 @@ const AdminDashboard = () => {
       <div className="dashboard-main-content">
         <h1 className="dashboard-title">Admin Dashboard</h1>
 
-        {/* Time Period Filter */}
         <div className="time-period-filter">
           {["Day", "Week", "Month", "Year"].map((period) => (
             <button
               key={period}
               onClick={() => setTimePeriod(period)}
-              className={`time-period-button ${
-                timePeriod === period ? "active" : ""
-              }`}
+              className={`time-period-button ${timePeriod === period ? "active" : ""}`}
             >
               {period}
             </button>
           ))}
         </div>
 
-        {/* Revenue Chart */}
-        <div className="chart-container">
+        <div className="chart-container" style={{ height: "400px", width: "90%" }}>
           {loading ? (
             <p>Loading...</p>
           ) : (
             <Line
               data={{
-                labels: dashboardData.timeLabels,
+                labels: dashboardData.revenue_per_unit.map(item => item.time_unit),
                 datasets: [
                   {
                     label: `Revenue (${timePeriod})`,
-                    data: dashboardData.revenue,
+                    data: dashboardData.revenue_per_unit.map(item => item.total_revenue),
                     borderColor: "#FF9800",
                     backgroundColor: "rgba(255, 152, 0, 0.2)",
                     fill: true,
@@ -123,18 +135,17 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* Rides Per Area */}
-        <div className="chart-container">
+        <div className="chart-container" style={{ height: "400px", width: "90%" }}>
           {loading ? (
             <p>Loading...</p>
           ) : (
             <Bar
               data={{
-                labels: dashboardData.ridesPerArea.map((item) => item.area),
+                labels: dashboardData.rides_per_area.map(item => item.area_name),
                 datasets: [
                   {
                     label: `Rides Per Area (${timePeriod})`,
-                    data: dashboardData.ridesPerArea.map((item) => item.count),
+                    data: dashboardData.rides_per_area.map(item => item.total_rides),
                     backgroundColor: "rgba(75, 192, 192, 0.6)",
                     borderColor: "rgba(75, 192, 192, 1)",
                     borderWidth: 1,
@@ -146,20 +157,17 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* Rides Per Driver */}
-        <div className="chart-container">
+        <div className="chart-container" style={{ height: "400px", width: "90%" }}>
           {loading ? (
             <p>Loading...</p>
           ) : (
             <Pie
               data={{
-                labels: dashboardData.ridesPerDriver.map(
-                  (item) => `Driver ${item.driverId}`
-                ),
+                labels: dashboardData.rides_per_driver.map(item => `${item.driver__first_name} ${item.driver__last_name}`),
                 datasets: [
                   {
                     label: `Rides Per Driver (${timePeriod})`,
-                    data: dashboardData.ridesPerDriver.map((item) => item.count),
+                    data: dashboardData.rides_per_driver.map(item => item.total_rides),
                     backgroundColor: [
                       "#FF6384",
                       "#36A2EB",
@@ -170,41 +178,18 @@ const AdminDashboard = () => {
                   },
                 ],
               }}
-            />
-          )}
-        </div>
-
-        {/* Rides Per Customer */}
-        <div className="chart-container">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <Bar
-              data={{
-                labels: dashboardData.ridesPerCustomer.map(
-                  (item) => `Customer ${item.customerId}`
-                ),
-                datasets: [
-                  {
-                    label: `Rides Per Customer (${timePeriod})`,
-                    data: dashboardData.ridesPerCustomer.map((item) => item.count),
-                    backgroundColor: "rgba(255, 99, 132, 0.6)",
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    borderWidth: 1,
-                  },
-                ],
-              }}
               options={chartOptions}
             />
           )}
         </div>
 
-        {/* Metrics */}
         <div className="metrics">
-          <MetricCard title="Total Users" value={dashboardData.totalUsers} />
-          <MetricCard title="Total Drivers" value={dashboardData.totalDrivers} />
-          <MetricCard title="Total Rides" value={dashboardData.totalRides} />
-          <MetricCard title="Revenue" value={`$${dashboardData.revenueSummary}`} />
+          <MetricCard title="Total Rides" value={dashboardData.total_rides} />
+          <MetricCard title="Total Revenue" value={`$${dashboardData.total_revenue}`} />
+          <MetricCard title="Avg Rides per Customer" value={dashboardData.avg_rides_per_customer.toFixed(2)} />
+          <MetricCard title="Avg Rides per Driver" value={dashboardData.avg_rides_per_driver.toFixed(2)} />
+          <MetricCard title="Total Active Drivers" value={dashboardData.total_active_drivers} />
+          <MetricCard title="Total Active Customers" value={dashboardData.total_active_customers} />
         </div>
       </div>
     </div>

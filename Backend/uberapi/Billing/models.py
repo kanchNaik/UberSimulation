@@ -10,7 +10,7 @@ class Bill(models.Model):
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     ride = models.ForeignKey(Ride, on_delete=models.CASCADE, related_name='billing')
-    date = models.DateField()
+    date = models.DateTimeField()
     distance = models.FloatField()
     amount = models.FloatField()
     status = models.CharField(
