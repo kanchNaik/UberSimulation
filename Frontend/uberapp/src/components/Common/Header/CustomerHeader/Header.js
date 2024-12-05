@@ -1,8 +1,15 @@
-import React from "react";
-import { FaCar, FaBox, FaUserCircle } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaCar, FaBox, FaUserCircle, FaChevronDown } from "react-icons/fa";
 import "./HeaderStyles.css";
 
 const Header = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    console.log("Dropdown toggled");
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   return (
     <header className="header">
       <div className="logo">Uber</div>
@@ -22,9 +29,19 @@ const Header = () => {
           </li>
         </ul>
       </nav>
-      <div className="profile">
+      <div className="profile" onClick={toggleDropdown} role="button" tabIndex={0}>
         <span>My trips</span>
         <FaUserCircle className="profile-icon" aria-label="Profile icon" />
+        <FaChevronDown className="chevron-icon" aria-label="Dropdown icon" />
+        {isDropdownOpen && (
+          <div className="dropdown-menu">
+            <div className="dropdown-item">Wallet</div>
+            <div className="dropdown-item">Promos</div>
+            <div className="dropdown-item">Support</div>
+            <div className="dropdown-item">Manage account</div>
+            <div className="dropdown-item">Settings</div>
+          </div>
+        )}
       </div>
     </header>
   );
