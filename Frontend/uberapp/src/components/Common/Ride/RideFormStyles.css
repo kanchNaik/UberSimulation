@@ -1,6 +1,6 @@
 .ride-form-container {
-  width: 100%; /* Ensure form container adapts within its parent */
-  max-width: 350px; /* Restrict the maximum width */
+  width: 100%;
+  max-width: 350px;
   background-color: #f8f8f8;
   padding: 20px;
   border-radius: 10px;
