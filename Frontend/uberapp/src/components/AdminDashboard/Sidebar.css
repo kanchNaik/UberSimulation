@@ -1,8 +1,8 @@
-/* Sidebar wrapper */
+
 .sidebar-wrapper {
   position: relative;
   height: 100vh;
-  overflow: hidden; /* Prevent unwanted scrollbars */
+  display: flex;
 }
 
 /* Menu Icon */
@@ -12,64 +12,70 @@
   left: 15px;
   font-size: 24px;
   cursor: pointer;
-  z-index: 1000; /* Ensure it stays above the sidebar */
+  z-index: 1000;
   color: #1b1b1b; /* Dark color for the menu icon */
-  background: none;
-  border: none;
-  outline: none;
 }
 
 /* Sidebar */
 .sidebar {
   height: 100vh; /* Full height */
-  width: 250px; /* Fixed width for the sidebar */
+  width: 225px; /* Set width of sidebar */
   background-color: #fff;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
-  left: -250px; /* Fully hidden */
+  left: 0;
   display: flex;
   flex-direction: column;
-  transition: left 0.3s ease-in-out; /* Smooth transition */
+  transform: translateX(-130%); /* Fully hidden */
+  transition: transform 0.3s ease-in-out; /* Smooth transition */
   z-index: 999;
 }
 
 /* Open state */
 .sidebar.open {
-  left: 0; /* Fully visible */
+  transform: translateX(0); /* Fully visible */
+  height: 100vh; /* Full height */
 }
 
 /* Sidebar header */
 .sidebar-header {
   display: flex;
-  justify-content: space-between; /* Align header text and close button */
+  justify-content: space-between; /* Position X to the top-right */
   align-items: center;
   padding: 20px;
-  background-color: #fff;
+  background-color: #fff; /* Match background color */
   border-bottom: 1px solid #ddd;
+  position: sticky; /* Ensures header stays at the top */
+  top: 0;
+  z-index: 100;
 }
 
 .sidebar-header h2 {
   font-size: 18px;
   font-weight: bold;
   color: #333;
-  margin: 0;
 }
 
 /* Close button */
 .close-sidebar {
+  position: absolute; /* Make it relative to the sidebar */
+  top: 15px; /* Adjust the vertical position */
+  right: 15px; /* Adjust the horizontal position */
   background: none;
   border: none;
-  font-size: 20px; /* Larger font size for better visibility */
+  font-size: 24px; /* Adjust font size for better visibility */
   cursor: pointer;
-  color: #333;
+  color: #333; /* Match sidebar's text color */
+  z-index: 1000; /* Ensure it stays on top of sidebar content */
 }
+
 
 /* Sidebar options */
 .sidebar-options {
   padding: 20px;
   flex: 1; /* Take up remaining space */
-  overflow-y: auto; /* Enable scrolling if content overflows */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
 }
 
 .sidebar ul {
@@ -102,7 +108,14 @@
   font-size: 18px;
 }
 
-/* Prevent body overflow */
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  margin-top: auto; /* Push footer to the bottom */
+}
+
+/* Sidebar fully hidden */
 body {
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling when sidebar is hidden */
 }

@@ -20,14 +20,14 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
-              <button className="close-sidebar" onClick={toggleSidebar}>
-            ✖
-          </button>
+        <button className="close-sidebar" onClick={toggleSidebar}>
+          ✖
+        </button>
+
         <div className="sidebar-header">
           <h2>Uber Admin</h2>
-    
         </div>
-  
+
         <div className="sidebar-options">
           <ul>
             <li>
