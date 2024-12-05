@@ -37,6 +37,8 @@ function App() {
           <Route path="/customer/trips" element={<TripsList />} />
           <Route path="/customer/billing" element={<Billing />} />
 
+          <Route path="/customer/chooseride" element={<ChooseRide />} />
+
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />
           <Route path="/customer/payments/add" element={<AddPaymentMethod />} />

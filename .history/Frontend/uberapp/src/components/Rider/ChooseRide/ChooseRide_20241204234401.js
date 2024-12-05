@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import "./ChooseRide.css"; // Add styling specific to ChooseRide
-import ConfirmRequest from "../ConfirmRequest/ConfirmRequest";
 import uberX from "./uberx.jpg";
 import uberXL from "./uberxl.jpg";
 import comfort from "./ubercomfort.jpg";
@@ -16,16 +15,6 @@ import carSeat from "./ubercarseat.jpg";
 import applePay from "./applepay.jpg";
 
 const ChooseRide = ({ onClose }) => {
-  const [showConfirm, setShowConfirm] = useState(false);
-
-  const handleRequestClick = () => {
-    setShowConfirm(true);
-  };
-
-  const handleCloseConfirm = () => {
-    setShowConfirm(false);
-  };
-
   const rideOptions = [
     {
       category: "Recommended",
@@ -171,14 +160,9 @@ const ChooseRide = ({ onClose }) => {
             <img className="payment-logo" src={applePay} alt="Apple Pay" />
             <p>Apple Pay • Personal</p>
           </div>
-          <button className="request-ride-button" onClick={handleRequestClick}>
-            Request
-          </button>
+          <button className="request-ride-button">Request</button>
         </div>
       </div>
-
-      {/* Confirm Request Modal */}
-      {showConfirm && <ConfirmRequest onClose={handleCloseConfirm} />}
     </div>
   );
 };

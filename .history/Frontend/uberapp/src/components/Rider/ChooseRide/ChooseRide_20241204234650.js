@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./ChooseRide.css"; // Add styling specific to ChooseRide
-import ConfirmRequest from "../ConfirmRequest/ConfirmRequest";
+import ConfirmRequest from "./ConfirmRequest/";
 import uberX from "./uberx.jpg";
 import uberXL from "./uberxl.jpg";
 import comfort from "./ubercomfort.jpg";
