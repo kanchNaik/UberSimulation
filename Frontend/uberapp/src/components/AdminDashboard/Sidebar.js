@@ -50,6 +50,11 @@ const Sidebar = () => {
                 <FaReceipt className="icon" /> Rides
               </Link>
             </li>
+            <li>
+              <Link to="/admin/billsinfo">
+                <FaReceipt className="icon" /> Bills
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="sidebar-footer">

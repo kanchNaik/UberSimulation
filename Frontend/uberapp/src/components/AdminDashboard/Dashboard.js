@@ -1,33 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
-import "./Dashboard.css"; // Import the merged CSS
+import "./Dashboard.css"; // Import your CSS
+import Cookies from "js-cookie";
+import { BASE_API_URL } from "../../Setupconstants"; // Replace with your actual constants file
 
 const AdminDashboard = () => {
-  const [timePeriod, setTimePeriod] = useState("Day"); // Default time period is "Day"
+  const [timePeriod, setTimePeriod] = useState("Day");
+  const [dashboardData, setDashboardData] = useState({
+    revenue: [],
+    timeLabels: [],
+    totalUsers: 0,
+    totalDrivers: 0,
+    totalRides: 0,
+    revenueSummary: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
-  // Dummy data for revenue
-  const revenueData = {
-    Day: [200, 300, 250, 400, 350, 300, 450], // Example revenue for a week
-    Week: [1500, 1700, 1800, 2000],
-    Month: [8000, 9500, 10000],
-    Year: [105000, 120000, 135000],
-  };
+  const token = Cookies.get("access_token");
 
-  const timeLabels = {
-    Day: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    Week: ["Week 1", "Week 2", "Week 3", "Week 4"],
-    Month: ["Jan", "Feb", "Mar"],
-    Year: ["2021", "2022", "2023"],
-  };
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await fetch(
+          `${BASE_API_URL}/api/admin/dashboard?timePeriod=${timePeriod}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-  // Chart.js configuration
+        if (!response.ok) {
+          throw new Error("Failed to fetch dashboard data");
+        }
+
+        const data = await response.json();
+        setDashboardData({
+          revenue: data.revenue,
+          timeLabels: data.timeLabels,
+          totalUsers: data.totalUsers,
+          totalDrivers: data.totalDrivers,
+          totalRides: data.totalRides,
+          revenueSummary: data.revenueSummary,
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [timePeriod]);
+
   const chartData = {
-    labels: timeLabels[timePeriod],
+    labels: dashboardData.timeLabels,
     datasets: [
       {
         label: `Revenue (${timePeriod})`,
-        data: revenueData[timePeriod],
+        data: dashboardData.revenue,
         borderColor: "#FF9800",
         backgroundColor: "rgba(255, 152, 0, 0.2)",
         fill: true,
@@ -59,14 +93,9 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard-container">
-      {/* Sidebar */}
       <Sidebar />
-
-      {/* Main Content */}
       <div className="dashboard-main-content">
         <h1 className="dashboard-title">Admin Dashboard</h1>
-
-        {/* Filter Bar for Time Period */}
         <div className="time-period-filter">
           {["Day", "Week", "Month", "Year"].map((period) => (
             <button
@@ -80,18 +109,14 @@ const AdminDashboard = () => {
             </button>
           ))}
         </div>
-
-        {/* Revenue Chart */}
         <div className="chart-container">
-          <Line data={chartData} options={chartOptions} />
+          {loading ? <p>Loading...</p> : <Line data={chartData} options={chartOptions} />}
         </div>
-
-        {/* Metrics */}
         <div className="metrics">
-          <MetricCard title="Total Users" value="24,563" />
-          <MetricCard title="Total Drivers" value="1,234" />
-          <MetricCard title="Total Rides" value="45,678" />
-          <MetricCard title="Revenue" value="$123,456" />
+          <MetricCard title="Total Users" value={dashboardData.totalUsers} />
+          <MetricCard title="Total Drivers" value={dashboardData.totalDrivers} />
+          <MetricCard title="Total Rides" value={dashboardData.totalRides} />
+          <MetricCard title="Revenue" value={`$${dashboardData.revenueSummary}`} />
         </div>
       </div>
     </div>

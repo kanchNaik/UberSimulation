@@ -18,12 +18,13 @@ import CustomerProfile from "./components/UserProfile/CustomerProfile";
 import DriverProfile from "./components/UserProfile/DriverProfile";
 import TripsList from "./components/Rider/Trips/TripsList";
 import Billing from "./components/Rider/Billing/Billing";  
-import Users from "./components/AdminDashboard/Users";
-import Drivers from "./components/AdminDashboard/Drivers";
-import Rides from "./components/AdminDashboard/Rides";
+import Users from "./components/AdminDashboard/Filter/Users";
+import Drivers from "./components/AdminDashboard/Filter/Drivers";
+import Rides from "./components/AdminDashboard/Filter/Rides";
 import AddCustomer from "./components/Auth/AdminAuth/AddCustomer";
 import AddDriver from "./components/Auth/AdminAuth/AddDriver";
 import AddAdmin from "./components/Auth/AdminAuth/AddAdmin";
+import Bills from "./components/AdminDashboard/Filter/Bills";
 window.store = store;
 
 function App() {
@@ -53,7 +54,8 @@ function App() {
           <Route path="/admin/add-driver" element={<AddDriver />} />
           <Route path="/admin/add-customer" element={<AddCustomer />} />
           <Route path="/admin/add-admin" element={<AddAdmin />} />
-
+          <Route path="/admin/billsinfo" element={<Bills />} />
+          <Route path="/logout" element={<Navigate to="/uberhome" replace />} />
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />
           <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
