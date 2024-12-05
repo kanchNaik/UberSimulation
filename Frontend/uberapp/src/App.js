@@ -16,7 +16,7 @@ import AddPaymentMethod from "./components/Payments/AddPaymentMethod";
 import CustomerProfile from "./components/UserProfile/CustomerProfile";
 import DriverProfile from "./components/UserProfile/DriverProfile";
 import TripsList from "./components/Rider/Trips/TripsList";
-
+import Billing from "./components/Rider/Billing/Billing";  
 
 window.store = store;
 
@@ -35,6 +35,7 @@ function App() {
           <Route path="/driver/home" element={<DriverHome />} />
           <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
           <Route path="/customer/trips" element={<TripsList />} />
+          <Route path="/customer/billing" element={<Billing />} />
 
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />
