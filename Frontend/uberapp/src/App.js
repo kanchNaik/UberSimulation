@@ -17,6 +17,7 @@ import CustomerProfile from "./components/UserProfile/CustomerProfile";
 import DriverProfile from "./components/UserProfile/DriverProfile";
 import TripsList from "./components/Rider/Trips/TripsList";
 import Billing from "./components/Rider/Billing/Billing";  
+import ChooseRide from "./components/Rider/ChooseRide/ChooseRide";
 
 window.store = store;
 
@@ -36,6 +37,8 @@ function App() {
           <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
           <Route path="/customer/trips" element={<TripsList />} />
           <Route path="/customer/billing" element={<Billing />} />
+
+          <Route path="/customer/chooseride" element={<ChooseRide />} />
 
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />
