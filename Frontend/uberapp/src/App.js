@@ -21,6 +21,9 @@ import Billing from "./components/Rider/Billing/Billing";
 import Users from "./components/AdminDashboard/Users";
 import Drivers from "./components/AdminDashboard/Drivers";
 import Rides from "./components/AdminDashboard/Rides";
+import AddCustomer from "./components/Auth/AdminAuth/AddCustomer";
+import AddDriver from "./components/Auth/AdminAuth/AddDriver";
+import AddAdmin from "./components/Auth/AdminAuth/AddAdmin";
 window.store = store;
 
 function App() {
@@ -47,6 +50,9 @@ function App() {
           <Route path="/admin/usersinfo" element={<Users />} />
           <Route path="/admin/driversinfo" element={<Drivers />} />
           <Route path="/admin/ridesinfo" element={<Rides />} />
+          <Route path="/admin/add-driver" element={<AddDriver />} />
+          <Route path="/admin/add-customer" element={<AddCustomer />} />
+          <Route path="/admin/add-admin" element={<AddAdmin />} />
 
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />

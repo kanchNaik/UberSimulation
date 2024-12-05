@@ -1,6 +1,6 @@
-import React from 'react'
-import Sidebar from '../AdminDashboard/Sidebar'
-import HomePage from '../AdminDashboard/Home'
+import React from 'react';
+import Sidebar from '../AdminDashboard/Sidebar';
+import HomePage from '../AdminDashboard/Home';
 function AdminHome() {
   return (
     <div style={{ display: "flex" }}>
