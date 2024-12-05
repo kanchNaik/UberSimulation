@@ -7,9 +7,17 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  :root {
+    --font-family: Arial, sans-serif;
+    --primary-color: black;
+    --secondary-color: #f1f1f1;
+    --border-radius: 10px;
+  }
+
   body {
-    font-family: Arial, sans-serif;
-    color: #333;
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
   }
 
   .App {

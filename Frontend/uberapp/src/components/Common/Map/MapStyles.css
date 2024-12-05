@@ -20,5 +20,6 @@
     border-radius: 10px;
     overflow: hidden;
     position: relative;
+    background-color: #e9ecef; /* Fallback if map fails to load */
   }
   

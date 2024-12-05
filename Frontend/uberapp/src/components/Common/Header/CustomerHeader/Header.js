@@ -38,7 +38,14 @@ const Header = () => {
             <div className="dropdown-item">Wallet</div>
             <div className="dropdown-item">Promos</div>
             <div className="dropdown-item">Support</div>
-            <div className="dropdown-item">Manage account</div>
+            <div><a
+              href="/customer/manageaccount/:id"
+              className="dropdown-item"
+              role="menuitem"
+              aria-label="Manage account link"
+            >
+              Manage account
+            </a></div>
             <div className="dropdown-item">Settings</div>
           </div>
         )}
