@@ -70,3 +70,12 @@
 .dropdown-item:hover {
   background: #f5f5f5;
 }
+.profile-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Use the current text color */
+}
+
+.profile-link:hover {
+  text-decoration: none; /* Ensure no underline on hover */
+  color: inherit; /* Maintain text color on hover */
+}
