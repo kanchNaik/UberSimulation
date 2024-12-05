@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './SignUp.css';
 import { useNavigate } from 'react-router-dom';
 import { messageService } from '../../Common/Message/MessageService';
 import { BASE_API_URL } from '../../../Setupconstants';
+import axios from 'axios';
 
 function DriverSignup() {
   const navigate = useNavigate();
@@ -26,8 +27,29 @@ function DriverSignup() {
     }
   });
 
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  useEffect(() => {
+    const fetchStates = () => {
+      axios
+        .post('https://countriesnow.space/api/v0.1/countries/states', { country: "United States" })
+        .then((response) => setStates(response.data.data.states))
+        .catch((error) => console.error('Error fetching states:', error));
+    };
+    
+
+    fetchStates();
+  }, []);
+
+  const fetchCities = (stateName) => {
+    axios
+      .post('https://countriesnow.space/api/v0.1/countries/state/cities', { country: "United States", state: stateName })
+      .then((response) => setCities(response.data.data))
+      .catch((error) => console.error('Error fetching cities:', error));
+  };
 
   const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,7 +76,13 @@ function DriverSignup() {
       } else {
         setPasswordError('');
       }
-    }
+    }else if (name === 'state') {
+        fetchCities(value);
+        setFormData((prevData) => ({
+          ...prevData,
+          city: ''
+        }));
+      }
 
     setFormData((prevData) => {
       if (name.startsWith('vehicle.')) {
@@ -204,28 +232,39 @@ function DriverSignup() {
           />
         </div>
         <div className='input-item'>
-          <label>City:</label>
-          <input
-            type="text"
-            name="city"
-            className='input-field'
-            placeholder="Enter your city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className='input-item'>
-          <label>State:</label>
-          <input
-            type="text"
+        <label>State:</label>
+        <select
             name="state"
             className='input-field'
-            placeholder="Enter your state"
             value={formData.state}
             onChange={handleChange}
             required
-          />
+        >
+            <option value="">Select your state</option>
+            {states.map((state, index) => (
+            <option key={index} value={state.name}>
+                {state.name}
+            </option>
+            ))}
+        </select>
+        </div>
+
+        <div className='input-item'>
+        <label>City:</label>
+        <select
+            name="city"
+            className='input-field'
+            value={formData.city}
+            onChange={handleChange}
+            required
+        >
+            <option value="">Select your city</option>
+            {cities.map((city, index) => (
+            <option key={index} value={city}>
+                {city}
+            </option>
+            ))}
+        </select>
         </div>
         <div className='input-item'>
           <label>ZIP Code:</label>

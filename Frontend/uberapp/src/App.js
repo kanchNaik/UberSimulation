@@ -8,6 +8,8 @@ import Home from "./components/Home/Home";
 import Login from "./components/Auth/Login/Login";
 import CustomerSignup from "./components/Auth/Signup/CustomerSignup";
 import DriverSignup from "./components/Auth/Signup/DriverSignup";
+import CustomerProfile from "./components/UserProfile/CustomerProfile";
+import DriverProfile from "./components/UserProfile/DriverProfile";
 
 function App() {
   return (
@@ -20,8 +22,10 @@ function App() {
           <Route path="/customer/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
+          <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
 
           <Route path="/driver/signup" element={<DriverSignup />} />
+          <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
         </Routes>
         </div>

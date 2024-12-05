@@ -50,6 +50,7 @@ function Login() {
         // dispatch(setAuthToken(token));
         if(user.is_customer) 
         {
+           
            navigate('/customer/home')
         }
         else if(user.is_driver){

@@ -72,9 +72,16 @@ class CustomerViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """
         Handles both PUT (full update) and PATCH (partial update).
+        Only available for admin users or the customer themselves.
         """
         partial = kwargs.pop('partial', False)
         customer = get_object_or_404(Customer, pk=kwargs.get('pk'))
+
+        # Check if the user is an admin or the customer themselves
+        if not (request.user.is_staff or request.user == customer.user):  # Assuming `Customer` has a `user` field
+            return Response({"detail": "You do not have permission to perform this action."},
+                            status=status.HTTP_403_FORBIDDEN)
+
         serializer = CustomerRegistrationSerializer(customer, data=request.data, partial=partial)
 
         if serializer.is_valid():
