@@ -2,7 +2,6 @@ import React from "react";
 import Header from "../Common/Header/CustomerHeader/Header";
 import RideForm from "../Common/Ride/RideForm";
 import Map from "../Common/Map/Map";
-import DropdownMenu from '../Common/Header/CustomerHeader/DropdownMenu';
 function Home() {
   return (
     <>
@@ -19,7 +18,7 @@ function Home() {
       >
         <RideForm />
         <Map />
-        <DropdownMenu />
+
       </div>
     </>
   );
