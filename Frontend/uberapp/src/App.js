@@ -25,6 +25,8 @@ import AddCustomer from "./components/Auth/AdminAuth/AddCustomer";
 import AddDriver from "./components/Auth/AdminAuth/AddDriver";
 import AddAdmin from "./components/Auth/AdminAuth/AddAdmin";
 import Bills from "./components/AdminDashboard/Filter/Bills";
+import UberHome from "./components/Home/UberHome";
+import Signup from "./components/Auth/Signup/Signup";
 window.store = store;
 
 function App() {
@@ -39,7 +41,7 @@ function App() {
 
           {/* Auth Routes  */}
           <Route path="/login" element={<Login />} />
-          
+          <Route path="/signup" element={<Signup />} />
           {/* Customer Routes */} 
           <Route path="/customer/home" element={<Home />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
@@ -65,7 +67,7 @@ function App() {
           <Route path="/driver/home" element={<DriverHome />} />
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
-
+          <Route path="/uberhome" element={<UberHome />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
         </Routes>
         </div>

@@ -1,0 +1,74 @@
+.uber-home {
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .uber-header {
+    background-color: #000;
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .auth-links a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .signup-btn {
+    background-color: white;
+    color: black;
+    padding: 5px 10px;
+  }
+  
+  .hero-section {
+    padding: 20px;
+    background: #f8f9fa;
+  }
+  
+  .input-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .map-container img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+  }
+  
+  .suggestions {
+    margin: 20px 0;
+  }
+  
+  .card-group {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  
+  .uber-footer {
+    background: #000;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  
