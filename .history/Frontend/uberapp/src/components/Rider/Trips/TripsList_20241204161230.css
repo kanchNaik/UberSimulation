@@ -99,6 +99,7 @@ h2 {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s, color 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* New line for subtle shadow effect */
 }
 
 .request-ride-button:hover {
@@ -134,7 +135,7 @@ h2 {
 }
 
 .trip-info {
-  text-align: center; /* Center-align the trip information text */
+  /* text-align: center; Center-align the trip information text */
   width: 100%;
 }
 

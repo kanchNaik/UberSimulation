@@ -35,7 +35,6 @@ body, html {
   gap: 30px; /* Balanced spacing between sections */
   box-sizing: border-box;
   overflow-y: auto; /* Allow scrolling for content overflow */
-  color:#000000;
 }
 
 /* Trips Content Section */
@@ -81,8 +80,7 @@ h2 {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
-  text-align: left;
-  color: #000000;
+  text-align: center;
 }
 
 .ride-promo p {
@@ -106,7 +104,7 @@ h2 {
 }
 
 .request-ride-button:focus {
-  outline: 2px solid #000000;
+  outline: 2px solid #0056b3;
 }
 
 /* Upcoming Trips Section */
@@ -161,7 +159,7 @@ h2 {
 }
 
 .reserve-button:focus {
-  outline: 2px solid #000000;
+  outline: 2px solid #0056b3;
 }
 
 /* Past Trips Section */

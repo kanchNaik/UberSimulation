@@ -29,14 +29,19 @@ const TripsList = () => {
             <h2>Upcoming</h2>
             <div className="trip-banner">
               <img src={carIllustration} alt="Car Illustration" />
+              </div>
+              <div className="trip-info">
+                <p>You have no upcoming trips</p>
+                <p><button className="request-ride-button">Request a ride</button>
+                </p><button className="reserve-button">Reserve ride</button>
+              
             </div>
-              <h2>You have no upcoming trips</h2>
-                <button className="request-ride-button">Reserve ride</button>      
           </section>
 
           <section className="past-trips">
             <h2>Past</h2>
             <div className="trip-filters">
+
               <div className="filter-dropdown">
                 <button
                   className="filter-button"
@@ -67,45 +72,46 @@ const TripsList = () => {
                   📅 {tripFilter} ▾
                 </button>
                 {tripDropdown && (
-                  <div className="dropdown-menu scrollable-dropdown">
-                    <div onClick={() => handleTripSelect("All Trips")}>
-                      All Trips
+                    <div className="dropdown-menu scrollable-dropdown">
+                      <div onClick={() => handleTripSelect("All Trips")}>
+                        All Trips
+                      </div>
+                      <div onClick={() => handleTripSelect("Past 30 days")}>
+                        Past 30 days
+                      </div>
+                      <div onClick={() => handleTripSelect("December")}>
+                        December
+                      </div>
+                      <div onClick={() => handleTripSelect("November")}>
+                        November
+                      </div>
+                      <div onClick={() => handleTripSelect("October")}>
+                        October
+                      </div>
+                      <div onClick={() => handleTripSelect("September")}>
+                        September
+                      </div>
+                      <div onClick={() => handleTripSelect("August")}>
+                        August
+                      </div>
+                      <div onClick={() => handleTripSelect("July")}>
+                        July
+                      </div>
+                      <div onClick={() => handleTripSelect("June")}>
+                        June
+                      </div>
+                      <div onClick={() => handleTripSelect("May")}>May</div>
+                      <div onClick={() => handleTripSelect("April")}>April</div>
+                      <div onClick={() => handleTripSelect("March")}>March</div>
+                      <div onClick={() => handleTripSelect("February")}>
+                        February
+                      </div>
+                      <div onClick={() => handleTripSelect("January")}>
+                        January
+                      </div>
                     </div>
-                    <div onClick={() => handleTripSelect("Past 30 days")}>
-                      Past 30 days
-                    </div>
-                    <div onClick={() => handleTripSelect("December")}>
-                      December
-                    </div>
-                    <div onClick={() => handleTripSelect("November")}>
-                      November
-                    </div>
-                    <div onClick={() => handleTripSelect("October")}>
-                      October
-                    </div>
-                    <div onClick={() => handleTripSelect("September")}>
-                      September
-                    </div>
-                    <div onClick={() => handleTripSelect("August")}>
-                      August
-                    </div>
-                    <div onClick={() => handleTripSelect("July")}>
-                      July
-                    </div>
-                    <div onClick={() => handleTripSelect("June")}>
-                      June
-                    </div>
-                    <div onClick={() => handleTripSelect("May")}>May</div>
-                    <div onClick={() => handleTripSelect("April")}>April</div>
-                    <div onClick={() => handleTripSelect("March")}>March</div>
-                    <div onClick={() => handleTripSelect("February")}>
-                      February
-                    </div>
-                    <div onClick={() => handleTripSelect("January")}>
-                      January
-                    </div>
-                  </div>
-                )}
+                    )}
+
               </div>
             </div>
 

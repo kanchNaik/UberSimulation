@@ -30,10 +30,17 @@ const TripsList = () => {
             <div className="trip-banner">
               <img src={carIllustration} alt="Car Illustration" />
             </div>
+            <div className="trip-info">
               <h2>You have no upcoming trips</h2>
-                <button className="request-ride-button">Reserve ride</button>      
+              <p>
+                <button className="request-ride-button">Reserve ride</button>
+              </p>
+            </div>
+            <p>
+                <button className="request-ride-button">Reserve ride</button>
+              </p>
           </section>
-
+ x
           <section className="past-trips">
             <h2>Past</h2>
             <div className="trip-filters">

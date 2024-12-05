@@ -4,7 +4,7 @@ import RideForm from "./components/Common/Ride/RideForm";
 import Map from "./components/Common/Map/Map";
 import GlobalStyles from "./styles/GlobalStyles";
 import TripsList from "./components/Rider/Trips/TripsList";import Billing from "./components/Rider/Billing/Billing";
-// import BookRide from "./components/BookRide/BookRide";
+import BookRide from "./components/BookRide/BookRide";
 function App() {
   return (
     <>
