@@ -29,13 +29,13 @@ function App() {
           <Route path="/customer/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
-          <Route path="/driver" element={<Driver/>} />
-          <Route path="/driver/home" element={<DriverHome />} />
           <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
-
-          <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/customer/payments" element={<PaymentList />} />
           <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
+
+          <Route path="/driver/signup" element={<DriverSignup />} />
+          <Route path="/driver" element={<Driver/>} />
+          <Route path="/driver/home" element={<DriverHome />} />
           <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
         </Routes>

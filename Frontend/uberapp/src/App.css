@@ -38,8 +38,6 @@ body {
 
 .main-content {
   display: flex;
-  gap: 20px;
-  padding: 20px;
 }
 
 .ride-form {
