@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Drivers.css"; // Add a CSS file for styling
 import {BASE_API_URL} from "../../../Setupconstants";
+import Cookies from "js-cookie";
 
 const Drivers = () => {
   const [drivers, setDrivers] = useState([]); // To store all drivers
@@ -20,13 +21,21 @@ const Drivers = () => {
     vehicle_license_plate: "",
   });
 
+  const token = Cookies.get('access_token');
+
   // Fetch data from the backend
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/drivers`); // Replace with your API endpoint
-        setDrivers(response.data);
-        setFilteredDrivers(response.data); // Initialize filtered list
+        const response = await axios.get(`${BASE_API_URL}/api/drivers/search`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        // Access the results array from the response data
+        setDrivers(response.data.results);
+        setFilteredDrivers(response.data.results);
       } catch (error) {
         console.error("Error fetching drivers:", error);
       }

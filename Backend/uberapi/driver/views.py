@@ -14,6 +14,7 @@ from rides.models import Ride
 from Billing.models import Bill
 from django.db.models import Sum, Avg, Count
 from django.utils.timezone import now, timedelta
+from django.db.models import Q
 
 class DriverViewSet(viewsets.ModelViewSet):
     """
@@ -248,3 +249,73 @@ class DriverViewSet(viewsets.ModelViewSet):
         except Driver.DoesNotExist:
             return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    @action(detail=False, methods=['get'], url_path='search')
+    def search(self, request):
+        # Get search parameters from query params
+        username = request.query_params.get('username')
+        first_name = request.query_params.get('first_name')
+        last_name = request.query_params.get('last_name')
+        city = request.query_params.get('city')
+        state = request.query_params.get('state')
+        zip_code = request.query_params.get('zip_code')
+        license_number = request.query_params.get('license_number')
+        license_plate = request.query_params.get('license_plate')
+        vehicle_make = request.query_params.get('vehicle_make')
+        vehicle_model = request.query_params.get('vehicle_model')
+        vehicle_year = request.query_params.get('vehicle_year')
+
+        # Start with all drivers
+        queryset = Driver.objects.all()
+
+        # Apply filters based on provided parameters
+        if username:
+            queryset = queryset.filter(user__username__icontains=username)
+        if first_name:
+            queryset = queryset.filter(first_name__icontains=first_name)
+        if last_name:
+            queryset = queryset.filter(last_name__icontains=last_name)
+        if city:
+            queryset = queryset.filter(city__icontains=city)
+        if state:
+            queryset = queryset.filter(state__icontains=state)
+        if zip_code:
+            queryset = queryset.filter(zip_code=zip_code)
+        if license_number:
+            queryset = queryset.filter(license_number=license_number)
+        
+        # Vehicle related filters
+        vehicle_filters = Q()
+        if license_plate:
+            vehicle_filters &= Q(vehicle__license_plate=license_plate)
+        if vehicle_make:
+            vehicle_filters &= Q(vehicle__make__icontains=vehicle_make)
+        if vehicle_model:
+            vehicle_filters &= Q(vehicle__model__icontains=vehicle_model)
+        if vehicle_year:
+            vehicle_filters &= Q(vehicle__year=vehicle_year)
+        
+        if vehicle_filters:
+            queryset = queryset.filter(vehicle_filters)
+
+        # Serialize the results
+        results = [{
+            'id': driver.id,
+            'username': driver.user.username,
+            'first_name': driver.first_name,
+            'last_name': driver.last_name,
+            'city': driver.city,
+            'state': driver.state,
+            'zip_code': driver.zip_code,
+            'license_number': driver.license_number,
+            'vehicle': {
+                'make': driver.vehicle.make,
+                'model': driver.vehicle.model,
+                'year': driver.vehicle.year,
+                'license_plate': driver.vehicle.license_plate
+            } if driver.vehicle else None
+        } for driver in queryset]
+
+        return Response({
+            'count': len(results),
+            'results': results
+        }, status=status.HTTP_200_OK)
