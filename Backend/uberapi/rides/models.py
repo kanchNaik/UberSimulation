@@ -23,8 +23,8 @@ class Ride(models.Model):
     date_time = models.DateTimeField()
     
     # Specific times for pickup and dropoff
-    pickup_time = models.TimeField()
-    dropoff_time = models.TimeField()
+    pickup_time = models.DateTimeField()
+    dropoff_time = models.DateTimeField()
 
     # Foreign keys to Customer and Driver
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='rides')

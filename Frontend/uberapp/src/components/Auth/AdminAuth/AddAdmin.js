@@ -101,7 +101,7 @@ function AddAdmin() {
     }
 
     // Send the API request using fetch
-    fetch(`${BASE_API_URL}/api/customers/`, {
+    fetch(`${BASE_API_URL}/api/administrator/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -249,18 +249,6 @@ function AddAdmin() {
             required
           />
           {emailError && <span className="error-message">{emailError}</span>}
-        </div>
-        <div className='input-item'>
-          <label>Credit Card:</label>
-          <input
-            type="text"
-            name="credit_card"
-            className='input-field'
-            placeholder="Enter your credit card number"
-            value={formData.credit_card}
-            onChange={handleChange}
-            required
-          />
         </div>
         <div className='input-item'>
           <label>Password:</label>

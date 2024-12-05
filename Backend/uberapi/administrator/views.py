@@ -5,6 +5,7 @@ from .models import Administrator
 from rides.models import Ride
 from Billing.models import Bill
 from datetime import datetime, timedelta
+from django.utils import timezone
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -16,6 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
+from django.db.models import Sum, Count, Avg
+from django.db.models.functions import TruncHour, TruncDay, TruncMonth
 
 class AdministratorViewSet(viewsets.ModelViewSet):
     queryset = Administrator.objects.all()
@@ -108,49 +111,50 @@ class StatisticsView(viewsets.ModelViewSet):
     """
     queryset = Bill.objects.all()
 
+
     @action(detail=False, methods=['get'], url_path='report')
     def statistics(self, request, *args, **kwargs):
         """
-        Custom action to retrieve statistics.
+        Custom action to retrieve statistics based on the specified time period.
         """
-        # Parse date range from request, default to last 30 days if not specified
-        start_date = request.query_params.get('start_date')
-        end_date = request.query_params.get('end_date')
+        time_period = request.query_params.get('timePeriod', 'day')
+        end_date = timezone.now()
 
-        print(start_date, end_date)
-
-        if not start_date or not end_date:
-            end_date = datetime.now().date()
+        if time_period.lower() == 'day':
+            start_date = end_date - timedelta(days=1)
+            date_trunc = TruncHour('date')  # Use TruncHour for hourly report
+        elif time_period.lower() == 'week':
+            start_date = end_date - timedelta(weeks=1)
+            date_trunc = TruncDay('date')  # Use TruncDay for daily report
+        elif time_period.lower() == 'month':
             start_date = end_date - timedelta(days=30)
+            date_trunc = TruncDay('date')  # Use TruncDay for daily report
+        elif time_period.lower() == 'year':
+            start_date = end_date - timedelta(days=365)
+            date_trunc = TruncMonth('date')  # Use TruncMonth for monthly report
         else:
-            try:
-                start_date = datetime.strptime(start_date.strip(), '%Y-%m-%d').date()
-                end_date = datetime.strptime(end_date.strip(), '%Y-%m-%d').date()
-            except ValueError:
-                return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+            return Response({"error": "Invalid time period"}, status=400)
 
-        # 1. Revenue per day
-        revenue_per_day = (
+        # Revenue per time unit
+        revenue_per_unit = (
             Bill.objects
             .filter(date__range=(start_date, end_date))
-            .values('date')  # Group by date
-            .annotate(total_revenue=Sum('amount'))  # Sum up the revenue for each day
-            .order_by('date')  # Optional: Order by date
+            .annotate(time_unit=date_trunc)  # Annotate with truncated date
+            .values('time_unit')
+            .annotate(total_revenue=Sum('amount'))
+            .order_by('time_unit')
         )
 
-
-#         print(revenue_per_day)
-
-#         # 2. Total rides per area
+        # Rides per area
         rides_per_area = (
             Ride.objects
             .filter(date_time__range=(start_date, end_date))
-            .values('pickup_location__latitude', 'pickup_location__longitude')  # Group by area
+            .values('pickup_location__latitude', 'pickup_location__longitude')
             .annotate(total_rides=Count('ride_id'))
             .order_by('-total_rides')
         )
 
-#         # 3. Rides per driver
+        # Rides per driver
         rides_per_driver = (
             Ride.objects
             .filter(date_time__range=(start_date, end_date))
@@ -159,6 +163,53 @@ class StatisticsView(viewsets.ModelViewSet):
             .order_by('-total_rides')
         )
 
+        # Additional statistics
+        total_rides = Ride.objects.filter(date_time__range=(start_date, end_date)).count()
+        total_revenue = Bill.objects.filter(date__range=(start_date, end_date)).aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        avg_rides_per_customer = (
+            Ride.objects
+            .filter(date_time__range=(start_date, end_date))
+            .values('customer')
+            .annotate(ride_count=Count('ride_id'))
+            .aggregate(Avg('ride_count'))['ride_count__avg'] or 0
+        )
+
+        avg_rides_per_driver = (
+            Ride.objects
+            .filter(date_time__range=(start_date, end_date))
+            .values('driver')
+            .annotate(ride_count=Count('ride_id'))
+            .aggregate(Avg('ride_count'))['ride_count__avg'] or 0
+        )
+
+        total_active_drivers = (
+            Ride.objects
+            .filter(date_time__range=(start_date, end_date))
+            .values('driver')
+            .distinct()
+            .count()
+        )
+
+        total_active_customers = (
+            Ride.objects
+            .filter(date_time__range=(start_date, end_date))
+            .values('customer')
+            .distinct()
+            .count()
+        )
+
+        return Response({
+            'revenue_per_unit': revenue_per_unit,
+            'rides_per_area': rides_per_area,
+            'rides_per_driver': rides_per_driver,
+            'total_rides': total_rides,
+            'total_revenue': total_revenue,
+            'avg_rides_per_customer': avg_rides_per_customer,
+            'avg_rides_per_driver': avg_rides_per_driver,
+            'total_active_drivers': total_active_drivers,
+            'total_active_customers': total_active_customers,
+        })
 #         # Generate a bar chart for rides per driver
         # plt.figure(figsize=(10, 6))
         # driver_names = [f"{driver['driver__first_name']} {driver['driver__last_name']}" for driver in rides_per_driver]
