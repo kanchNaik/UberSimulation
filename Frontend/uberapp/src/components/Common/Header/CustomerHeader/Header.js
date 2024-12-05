@@ -29,23 +29,30 @@ const Header = () => {
           </li>
         </ul>
       </nav>
-      <div className="profile" onClick={toggleDropdown} role="button" tabIndex={0}>
-        <span>My trips</span>
+      <div className="profile">
+        <a href="/customer/trips" className="profile-link">
+          <span>My trips</span>
+        </a>
         <FaUserCircle className="profile-icon" aria-label="Profile icon" />
-        <FaChevronDown className="chevron-icon" aria-label="Dropdown icon" />
+        <FaChevronDown
+          className="chevron-icon"
+          aria-label="Dropdown icon"
+          onClick={toggleDropdown}
+        />
         {isDropdownOpen && (
           <div className="dropdown-menu">
             <div className="dropdown-item">Wallet</div>
             <div className="dropdown-item">Promos</div>
             <div className="dropdown-item">Support</div>
-            <div><a
-              href="/customer/manageaccount/:id"
-              className="dropdown-item"
-              role="menuitem"
-              aria-label="Manage account link"
-            >
-              Manage account
-            </a></div>
+            <div>
+              <a
+                href="/customer/manageaccount/:id"
+                className="dropdown-item"
+                role="menuitem"
+                aria-label="Manage account link"
+              >
+                Manage account
+              </a></div>
             <div className="dropdown-item">Settings</div>
           </div>
         )}
