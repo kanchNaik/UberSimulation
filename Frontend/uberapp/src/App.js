@@ -1,7 +1,7 @@
 import React from "react";
 import GlobalStyles from "./styles/GlobalStyles";
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-
+import store from './store';
 
 //All components import
 import Home from "./components/Home/Home";
@@ -10,6 +10,8 @@ import CustomerSignup from "./components/Auth/Signup/CustomerSignup";
 import DriverSignup from "./components/Auth/Signup/DriverSignup";
 import CustomerProfile from "./components/UserProfile/CustomerProfile";
 import DriverProfile from "./components/UserProfile/DriverProfile";
+
+window.store = store;
 
 function App() {
   return (
