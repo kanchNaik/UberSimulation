@@ -17,3 +17,15 @@
     color: #fff;
     font-weight: bold;
 }
+/* Logo Styles */
+.logo a {
+    text-decoration: none; /* Remove underline */
+    color: #fff; /* White color */
+    font-size: 20px; /* Adjust font size for prominence */
+    font-weight: bold; /* Make it bold */
+}
+
+.logo a:hover {
+    color: lightgray; /* Optional: Change color on hover */
+    text-decoration: none; /* Ensure no underline on hover */
+}
