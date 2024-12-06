@@ -56,8 +56,9 @@ const RideStatus = ({ isDriver = false }) => {
 
           {/* Navigate and Cancel Buttons */}
           <div className="navigate-section">
+          <button className="cancel-button">Cancel Ride</button>
             <button className="navigate-button">Navigate</button>
-            <button className="cancel-button">Cancel Ride</button>
+          
           </div>
 
           {/* Driver Info */}

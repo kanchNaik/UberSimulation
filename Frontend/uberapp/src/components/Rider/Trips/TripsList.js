@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
-import Header from "../../Common/Header/CustomerHeader/Header"; // Import the Header component
+import Header from "../../Common/Header/CustomerHeader/Header"; 
 import "./TripsList.css"; // Link your custom styles
 import carIllustration from "./trips.png"; // Import the image
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faUser } from "@fortawesome/free-solid-svg-icons";
+
 
 const TripsList = () => {
   const [personalDropdown, setPersonalDropdown] = useState(false);
@@ -27,10 +27,12 @@ const TripsList = () => {
 
   return (
     <div className="uber-trips-page">
+      {/* Header */}
       <Header />
 
       <main className="uber-main">
         <div className="trips-content">
+          {/* Upcoming Trips Section */}
           <section className="upcoming-trips">
             <h2>Upcoming</h2>
             <div className="trip-banner">
@@ -45,9 +47,11 @@ const TripsList = () => {
             </button>
           </section>
 
+          {/* Past Trips Section */}
           <section className="past-trips">
             <h2>Past</h2>
             <div className="trip-filters">
+              {/* Personal Filter */}
               <div className="filter-dropdown">
                 <button
                   className="filter-button"
@@ -70,51 +74,40 @@ const TripsList = () => {
                 )}
               </div>
 
+              {/* Trip Filter */}
               <div className="filter-dropdown">
                 <button
                   className="filter-button"
                   onClick={() => setTripDropdown(!tripDropdown)}
                 >
-                   <FontAwesomeIcon icon={faCalendar} className="location-icon" /> {tripFilter} ▾
+                  <FontAwesomeIcon icon={faCalendar} className="location-icon" />{" "}
+                  {tripFilter} ▾
                 </button>
                 {tripDropdown && (
                   <div className="dropdown-menu scrollable-dropdown">
-                    <div onClick={() => handleTripSelect("All Trips")}>
-                      All Trips
-                    </div>
-                    <div onClick={() => handleTripSelect("Past 30 days")}>
-                      Past 30 days
-                    </div>
-                    <div onClick={() => handleTripSelect("December")}>
-                      December
-                    </div>
-                    <div onClick={() => handleTripSelect("November")}>
-                      November
-                    </div>
-                    <div onClick={() => handleTripSelect("October")}>
-                      October
-                    </div>
-                    <div onClick={() => handleTripSelect("September")}>
-                      September
-                    </div>
-                    <div onClick={() => handleTripSelect("August")}>
-                      August
-                    </div>
-                    <div onClick={() => handleTripSelect("July")}>
-                      July
-                    </div>
-                    <div onClick={() => handleTripSelect("June")}>
-                      June
-                    </div>
-                    <div onClick={() => handleTripSelect("May")}>May</div>
-                    <div onClick={() => handleTripSelect("April")}>April</div>
-                    <div onClick={() => handleTripSelect("March")}>March</div>
-                    <div onClick={() => handleTripSelect("February")}>
-                      February
-                    </div>
-                    <div onClick={() => handleTripSelect("January")}>
-                      January
-                    </div>
+                    {[
+                      "All Trips",
+                      "Past 30 days",
+                      "December",
+                      "November",
+                      "October",
+                      "September",
+                      "August",
+                      "July",
+                      "June",
+                      "May",
+                      "April",
+                      "March",
+                      "February",
+                      "January",
+                    ].map((month) => (
+                      <div
+                        key={month}
+                        onClick={() => handleTripSelect(month)}
+                      >
+                        {month}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -139,6 +132,7 @@ const TripsList = () => {
           </section>
         </div>
 
+        {/* Sidebar Section */}
         <div className="ride-promo">
           <img src={carIllustration} alt="Car Illustration" className="promo-image" />
           <h3>Get a ride in minutes</h3>
