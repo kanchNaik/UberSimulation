@@ -28,19 +28,22 @@ body, html {
   box-sizing: border-box;
 }
 
+/* Main Content Layout */
 .uber-main {
   display: flex;
+  flex-direction: row; /* Sidebar aligns to the right */
   padding: 20px;
   width: 100%;
   gap: 30px; /* Balanced spacing between sections */
   box-sizing: border-box;
   overflow-y: auto; /* Allow scrolling for content overflow */
-  color:#000000;
+  color: #000000;
+  align-items: flex-start; /* Align sections at the top */
 }
 
 /* Trips Content Section */
 .trips-content {
-  flex: 3;
+  flex: 3; /* Occupies most of the screen space */
   display: flex;
   flex-direction: column;
   gap: 30px; /* Increased gap for better separation between sections */
@@ -48,18 +51,20 @@ body, html {
 
 /* Sidebar Section */
 .sidebar {
-  flex: 1;
+  flex: 1; /* Smaller portion for the sidebar */
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 20px;
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center elements horizontally */
+  align-items: right; /* Center elements horizontally */
   box-sizing: border-box;
-  position: sticky;
-  top: 20px; /* Sticky sidebar for better usability */
-  height: fit-content;
+  position: sticky; /* Keeps sidebar fixed while scrolling */
+  top: 5px; /* Sticky offset */
+  height: fit-content; /* Dynamic height based on content */
+  max-width: 300px; /* Restrict sidebar width */
+  align-self: flex-start; /* Align to the top of the container */
 }
 
 .promo-image {
@@ -75,6 +80,7 @@ body, html {
   font-weight: bold;
   margin-bottom: 15px;
   text-align: center;
+  
 }
 
 h2 {
@@ -126,34 +132,34 @@ h2 {
 }
 
 .trip-banner img {
-  width: 100%; /* Make the image take the full width of the container */
-  height: auto; /* Maintain the aspect ratio */
-  object-fit: cover; /* Cover the container area without distorting the image */
-  border-radius: 10px; /* Match the rounded corners of the container */
-  margin-bottom: 20px; /* Add spacing between the image and the content below */
+  width: 100%; /* Full width of container */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover;
+  border-radius: 10px; /* Match rounded corners */
+  margin-bottom: 20px; /* Spacing below image */
 }
 
 .trip-info {
-  text-align: center; /* Center-align the trip information text */
+  text-align: center; /* Center-align trip information text */
   width: 100%;
 }
 
 .trip-info p {
-  margin: 15px 0; /* Add spacing around the paragraph */
+  margin: 15px 0; /* Add spacing around paragraph */
   font-weight: bold;
 }
 
 .reserve-button {
-  width: 100%; /* Make the button take up the full width */
-  max-width: 300px; /* Limit the max width for a visually balanced button */
+  width: 100%; /* Full width of container */
+  max-width: 300px; /* Limit width for balance */
   padding: 12px 25px;
   background-color: #000;
   color: #fff;
   border: none;
-  border-radius: 20px; /* Rounded corners for the button */
+  border-radius: 20px; /* Rounded corners */
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .reserve-button:hover {
@@ -249,4 +255,21 @@ h2 {
 
 .past-trip-buttons button:focus {
   outline: 2px solid #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .uber-main {
+    flex-direction: column; /* Stack sections vertically */
+  }
+
+  .sidebar {
+    width: 100%; /* Full width on small screens */
+    max-width: none;
+    align-self: stretch; /* Stretch to fill container */
+  }
+
+  .trips-content {
+    width: 100%; /* Full width for content */
+  }
 }

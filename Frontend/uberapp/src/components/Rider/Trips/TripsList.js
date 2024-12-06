@@ -128,14 +128,13 @@ const TripsList = () => {
           </section>
         </div>
 
-        <aside className="sidebar">
           <div className="ride-promo">
             <img src={carIllustration} alt="Car Illustration" className="promo-image" />
             <h3>Get a ride in minutes</h3>
             <p>Book an Uber from a web browser, no app install necessary.</p>
             <button className="request-ride-button">Request a Ride</button>
           </div>
-        </aside>
+     
       </main>
     </div>
   );
