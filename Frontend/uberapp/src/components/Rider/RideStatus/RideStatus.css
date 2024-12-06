@@ -11,7 +11,7 @@
   
   .ride-status-content {
     display: flex;
-    flex: 1;
+    flex: 1;  
   }
   
   .details-section {
@@ -106,3 +106,104 @@
     padding: 20px;
   }
   
+
+/* Green Confirmation Message */
+.confirmation-status {
+  position: fixed; /* Position fixed to stay on top */
+  top: 10%; /* Position it at the top of the viewport */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for center alignment */
+  background-color: #d4edda; /* Light green background */
+  color: #155724; /* Dark green text */
+  border: 1px solid #c3e6cb; /* Green border */
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1050; /* High z-index to stay above other content */
+  width: fit-content; /* Adjust width to fit the content */
+}
+
+/* Navigate and Cancel Buttons */
+.navigate-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.navigate-button {
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.navigate-button:hover {
+  background-color: #0056b3;
+}
+
+.cancel-button {
+  background-color: #dc3545; /* Red for cancel button */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: #c82333;
+}
+
+/* Rating Section */
+.rating-section {
+  margin-top: 20px;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  text-align: center; /* Center-align the text */
+}
+
+.rating-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.rating-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.stars-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center; /* Centers the stars horizontally */
+  margin-bottom: 10px;
+}
+
+.star-icon {
+  font-size: 24px;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.star-icon:hover,
+.star-icon.selected {
+  color: #ffc107; /* Yellow color for selected or hovered stars */
+}
+
+.tip-message {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
