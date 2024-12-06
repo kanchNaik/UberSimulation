@@ -1,13 +1,13 @@
-import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+
+import { useNavigate } from "react-router-dom";
 import "./ConfirmRequest.css";
-import uberX from "../ChooseRide/uberx.jpg"; // Ensure this path is correct
+import uberX from "../ChooseRide/uberx.jpg";
 
 const ConfirmRequest = ({ onClose }) => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleConfirm = () => {
-    navigate("/customer/payments/add"); // Navigate to AddPaymentMethod page
+      navigate("/customer/ridestatus"); // Navigate to the next page
   };
 
   return (
@@ -25,11 +25,7 @@ const ConfirmRequest = ({ onClose }) => {
 
         {/* Ride Details */}
         <div className="ride-details">
-          <img
-            className="car-image"
-            src={uberX}
-            alt="UberX"
-          />
+          <img className="car-image" src={uberX} alt="UberX" />
           <div className="ride-info">
             <h4>UberX</h4>
             <p>13:39 • 2 min away</p>
@@ -50,6 +46,7 @@ const ConfirmRequest = ({ onClose }) => {
           </button>
         </div>
       </div>
+
     </div>
   );
 };
