@@ -1,13 +1,19 @@
 import React, { useState } from "react";
-import Header from "../../Common/Header/CustomerHeader/Header"; // Import the Header component from the correct directory
-import "./TripsList.css"; // Link your custom styles here
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import Header from "../../Common/Header/CustomerHeader/Header"; // Import the Header component
+import "./TripsList.css"; // Link your custom styles
 import carIllustration from "./trips.png"; // Import the image
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 const TripsList = () => {
   const [personalDropdown, setPersonalDropdown] = useState(false);
   const [tripDropdown, setTripDropdown] = useState(false);
   const [personalFilter, setPersonalFilter] = useState("Personal");
   const [tripFilter, setTripFilter] = useState("All Trips");
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handlePersonalSelect = (filter) => {
     setPersonalFilter(filter);
@@ -30,8 +36,13 @@ const TripsList = () => {
             <div className="trip-banner">
               <img src={carIllustration} alt="Car Illustration" />
             </div>
-              <h2>You have no upcoming trips</h2>
-                <button className="request-ride-button">Reserve ride</button>      
+            <h2>You have no upcoming trips</h2>
+            <button
+              className="request-ride-button"
+              onClick={() => navigate("/customer/home")} // Route to customer home
+            >
+              Reserve ride
+            </button>
           </section>
 
           <section className="past-trips">
@@ -42,7 +53,7 @@ const TripsList = () => {
                   className="filter-button"
                   onClick={() => setPersonalDropdown(!personalDropdown)}
                 >
-                  👤 {personalFilter} ▾
+                  <FontAwesomeIcon icon={faUser} /> {personalFilter} ▾
                 </button>
                 {personalDropdown && (
                   <div className="dropdown-menu">
@@ -64,7 +75,7 @@ const TripsList = () => {
                   className="filter-button"
                   onClick={() => setTripDropdown(!tripDropdown)}
                 >
-                  📅 {tripFilter} ▾
+                   <FontAwesomeIcon icon={faCalendar} className="location-icon" /> {tripFilter} ▾
                 </button>
                 {tripDropdown && (
                   <div className="dropdown-menu scrollable-dropdown">
@@ -128,13 +139,17 @@ const TripsList = () => {
           </section>
         </div>
 
-          <div className="ride-promo">
-            <img src={carIllustration} alt="Car Illustration" className="promo-image" />
-            <h3>Get a ride in minutes</h3>
-            <p>Book an Uber from a web browser, no app install necessary.</p>
-            <button className="request-ride-button">Request a Ride</button>
-          </div>
-     
+        <div className="ride-promo">
+          <img src={carIllustration} alt="Car Illustration" className="promo-image" />
+          <h3>Get a ride in minutes</h3>
+          <p>Book an Uber from a web browser, no app install necessary.</p>
+          <button
+            className="request-ride-button"
+            onClick={() => navigate("/customer/home")} // Route to customer home
+          >
+            Request a Ride
+          </button>
+        </div>
       </main>
     </div>
   );
