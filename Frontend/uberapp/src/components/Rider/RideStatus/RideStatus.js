@@ -15,8 +15,8 @@ const RideStatus = ({ isDriver = false }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowStatus(false); // Hide the confirmation message after 5 seconds
-    }, 5000);
+      setShowStatus(false); // Hide the confirmation message after 3 seconds
+    }, 3000);
     return () => clearTimeout(timer); // Cleanup timer on component unmount
   }, []);
 
@@ -63,7 +63,7 @@ const RideStatus = ({ isDriver = false }) => {
 
           {/* Driver Info */}
           <div className="driver-info-section">
-            <h1 className="driver-info-title">Driver</h1>
+            <b><h3 className="driver-info-title">Driver</h3></b>
             <div className="driver-info">
               <img
                 src="https://via.placeholder.com/50"
