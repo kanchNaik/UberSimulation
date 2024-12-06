@@ -1,0 +1,108 @@
+.ride-status-container {
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f8f9fa;
+  }
+  
+  .ride-status-content {
+    display: flex;
+    flex: 1;
+  }
+  
+  .details-section {
+    flex: 0.4;
+    background-color: white;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .ride-status-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .location-details {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px 15px;
+  }
+  
+  .location-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .address,
+  .destination {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .navigate-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .navigate-button {
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .navigate-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .arrival-time {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .driver-info-section {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+  }
+  
+  .driver-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .driver-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+  }
+  
+  .driver-details p {
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .map-section {
+    flex: 0.6;
+    padding: 20px;
+  }
+  
