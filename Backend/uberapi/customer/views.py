@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
+from driver.serializers import NearbyDriverSerializer
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -145,3 +146,24 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
         except Customer.DoesNotExist:
             return Response({"error": "Customer not found."}, status=404)
+        
+
+    @action(detail=False, methods=['get'], url_path='search')
+    def search_customers(self, request):
+        # Get query parameters
+        params = request.GET
+        queryset = Customer.objects.all()
+
+        # Apply filters
+        if 'first_name' in params:
+            queryset = queryset.filter(first_name__icontains=params['first_name'])
+        if 'city' in params:
+            queryset = queryset.filter(city__icontains=params['city'])
+        if 'state' in params:
+            queryset = queryset.filter(state__icontains=params['state'])
+        if 'zip_code' in params:
+            queryset = queryset.filter(zip_code__icontains=params['zip_code'])
+
+        # Serialize the queryset
+        serialized_customers = CustomerSerializer(queryset, many=True)
+        return Response(serialized_customers.data)

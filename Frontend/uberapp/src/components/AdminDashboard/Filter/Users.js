@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Users.css"; // Add a CSS file for styling
+import { BASE_API_URL } from "../../../Setupconstants";
+import Cookies from "js-cookie";
+import { messageService } from "../../Common/Message/MessageService";
 
 const Users = () => {
   const [customers, setCustomers] = useState([]); // To store all customers
   const [filteredCustomers, setFilteredCustomers] = useState([]); // To store filtered customers
   const [filters, setFilters] = useState({
-    username: "",
     first_name: "",
     last_name: "",
     city: "",
@@ -14,19 +16,38 @@ const Users = () => {
     zip_code: "",
   });
 
+  const accessToken = Cookies.get("access_token");
+
   // Fetch data from the backend
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/customers"); // Replace with your API endpoint
+        // Construct query parameters from filters, ignoring empty values
+        const queryParams = new URLSearchParams(
+          Object.entries(filters).filter(([_, value]) => value !== "")
+        ).toString();
+  
+        // Construct the complete API URL with query parameters
+        const url = `${BASE_API_URL}/api/customers/search?${queryParams}`;
+  
+        // Make the API call with authentication header
+        const response = await axios.get(url, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+  
+        // Set the customers and filtered customers state
         setCustomers(response.data);
-        setFilteredCustomers(response.data); // Initialize filtered list
+        setFilteredCustomers(response.data);
       } catch (error) {
         console.error("Error fetching customers:", error);
+        messageService.showMessage('error', 'Error fetching customers');
       }
     };
+  
     fetchCustomers();
-  }, []);
+  }, [filters]);
 
   // Apply filters when the "Search" button is clicked
   const handleSearch = () => {
@@ -57,13 +78,6 @@ const Users = () => {
 
       {/* Filters Section */}
       <div className="filters">
-        <input
-          type="text"
-          placeholder="Username"
-          name="username"
-          value={filters.username}
-          onChange={handleFilterChange}
-        />
         <input
           type="text"
           placeholder="First Name"
@@ -108,7 +122,6 @@ const Users = () => {
       <table className="customer-table">
         <thead>
           <tr>
-            <th>Username</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>City</th>
@@ -120,7 +133,6 @@ const Users = () => {
           {filteredCustomers.length > 0 ? (
             filteredCustomers.map((customer) => (
               <tr key={customer.id}>
-                <td>{customer.username}</td>
                 <td>{customer.first_name}</td>
                 <td>{customer.last_name}</td>
                 <td>{customer.city}</td>
@@ -130,7 +142,7 @@ const Users = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="9" className="no-results">
+              <td colSpan="6" className="no-results">
                 No customers found.
               </td>
             </tr>

@@ -3,6 +3,7 @@ import axios from "axios";
 import "./Bills.css";
 import { BASE_API_URL } from "../../../Setupconstants";
 import Cookies from 'js-cookie';
+import { messageService } from "../../Common/Message/MessageService";
 
 const Bills = () => {
   const [bills, setBills] = useState([]);
@@ -37,6 +38,7 @@ const Bills = () => {
       setBills(response.data);
     } catch (error) {
       console.error("Error fetching bills:", error);
+      messageService.showMessage('error', 'Error fetching bills');
     }
   };
 

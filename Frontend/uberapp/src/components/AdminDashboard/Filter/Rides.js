@@ -3,6 +3,7 @@ import axios from "axios";
 import "./Rides.css";
 import { BASE_API_URL } from "../../../Setupconstants";
 import Cookies from "js-cookie";
+import { messageService } from "../../Common/Message/MessageService";
 
 const accessToken = Cookies.get("access_token");
 
@@ -37,6 +38,7 @@ const Rides = () => {
       setRides(Array.isArray(response.data) ? response.data : [response.data]);
     } catch (error) {
       console.error("Error fetching rides:", error);
+      messageService.showMessage('error', 'Error fetching rides');
       setRides([]);
     }
   };

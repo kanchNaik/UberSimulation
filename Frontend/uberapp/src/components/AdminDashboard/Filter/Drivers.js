@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "./Drivers.css"; // Add a CSS file for styling
-import {BASE_API_URL} from "../../../Setupconstants";
+import { BASE_API_URL } from "../../../Setupconstants";
 import Cookies from "js-cookie";
+import { messageService } from "../../Common/Message/MessageService";
 
 const Drivers = () => {
   const [drivers, setDrivers] = useState([]); // To store all drivers
   const [filteredDrivers, setFilteredDrivers] = useState([]); // To store filtered drivers
   const [filters, setFilters] = useState({
-    username: "",
     first_name: "",
     last_name: "",
     city: "",
@@ -23,46 +23,47 @@ const Drivers = () => {
 
   const token = Cookies.get('access_token');
 
-  // Fetch data from the backend
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      try {
-        const response = await axios.get(`${BASE_API_URL}/api/drivers/search`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        // Access the results array from the response data
+  // Function to create query string from filters
+  const buildQueryParams = (filters) => {
+    const queryParams = Object.keys(filters)
+      .filter((key) => filters[key] !== "") // Only include non-empty filters
+      .map((key) => {
+        return `${encodeURIComponent(key)}=${encodeURIComponent(filters[key])}`;
+      })
+      .join("&");
+
+    return queryParams ? `?${queryParams}` : "";
+  };
+
+  // Fetch data from the backend with query params
+  const fetchDrivers = async () => {
+    const queryParams = buildQueryParams(filters);
+    try {
+      const response = await axios.get(`${BASE_API_URL}/api/drivers/search/${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('API Response:', response.data); // Log the response to check the structure
+
+      // Extract the `results` array from the response data
+      if (response.data && Array.isArray(response.data.results)) {
         setDrivers(response.data.results);
         setFilteredDrivers(response.data.results);
-      } catch (error) {
-        console.error("Error fetching drivers:", error);
+      } else {
+        console.error('Unexpected response data format:', response.data);
       }
-    };
-    fetchDrivers();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching drivers:", error);
+      messageService.showMessage('error', 'Error fetching drivers');
+    }
+  };
 
   // Apply filters when the "Search" button is clicked
   const handleSearch = () => {
-    const filtered = drivers.filter((driver) =>
-      Object.keys(filters).every((key) => {
-        if (!filters[key]) return true; // Skip empty filters
-        const [field, subfield] = key.split("_");
-        if (subfield) {
-          // For nested fields like vehicle_make
-          return driver[field]?.[subfield]
-            ?.toString()
-            .toLowerCase()
-            .includes(filters[key].toLowerCase());
-        }
-        return driver[key]
-          ?.toString()
-          .toLowerCase()
-          .includes(filters[key].toLowerCase());
-      })
-    );
-    setFilteredDrivers(filtered);
+    fetchDrivers();
   };
 
   // Handle input change for filters
@@ -74,19 +75,39 @@ const Drivers = () => {
     }));
   };
 
+  // Filter the drivers when search is clicked
+  const handleFilter = () => {
+    if (Array.isArray(drivers)) {
+      const filtered = drivers.filter((driver) =>
+        Object.keys(filters).every((key) => {
+          if (!filters[key]) return true; // Skip empty filters
+
+          const [field, subfield] = key.split("_");
+          if (subfield) {
+            // For nested fields like vehicle_make
+            return driver[field]?.[subfield]
+              ?.toString()
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          }
+          return driver[key]
+            ?.toString()
+            .toLowerCase()
+            .includes(filters[key].toLowerCase());
+        })
+      );
+      setFilteredDrivers(filtered);
+    } else {
+      console.error('Expected drivers to be an array, but it was not.');
+    }
+  };
+
   return (
     <div className="drivers-container">
       <h1>Drivers</h1>
 
       {/* Filters Section */}
       <div className="filters">
-        <input
-          type="text"
-          placeholder="Username"
-          name="username"
-          value={filters.username}
-          onChange={handleFilterChange}
-        />
         <input
           type="text"
           placeholder="First Name"
@@ -166,7 +187,6 @@ const Drivers = () => {
       <table className="drivers-table">
         <thead>
           <tr>
-            <th>Username</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>City</th>
@@ -183,7 +203,6 @@ const Drivers = () => {
           {filteredDrivers.length > 0 ? (
             filteredDrivers.map((driver) => (
               <tr key={driver.id}>
-                <td>{driver.username}</td>
                 <td>{driver.first_name}</td>
                 <td>{driver.last_name}</td>
                 <td>{driver.city}</td>
