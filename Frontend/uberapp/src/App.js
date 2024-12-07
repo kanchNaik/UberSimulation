@@ -10,7 +10,7 @@ import Dashboard from "./components/AdminDashboard/Dashboard";
 import CustomerSignup from "./components/Auth/Signup/CustomerSignup";
 import DriverSignup from "./components/Auth/Signup/DriverSignup";
 import Driver from "./components/Home/Driver";
-import DriverHome from "./components/Home/DriverHome";
+import DriverDashboard from "./components/Home/DriverDashboard";
 import AdminHome from "./components/Home/AdminHome";
 import PaymentList from "./components/Payments/PaymentList";
 import AddPaymentMethod from "./components/Payments/AddPaymentMethod";
@@ -68,7 +68,7 @@ function App() {
 
           {/* Driver Routes */}
           <Route path="/driver" element={<Driver/>} />
-          <Route path="/driver/home" element={<DriverHome />} />
+          <Route path="/driver/dashboard" element={<DriverDashboard />} />
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
           <Route path="/uberhome" element={<UberHome />} />
