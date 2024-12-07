@@ -34,6 +34,7 @@ const DriverProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [imageModal, setImageModal] = useState(false);
   const [videoModal, setVideoModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
 
@@ -127,6 +128,20 @@ const DriverProfile = () => {
       });
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      await axios.delete(`${BASE_API_URL}/api/drivers/${id}/`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      messageService.showMessage('success', 'Account deleted successfully!');
+      Cookies.remove('access_token');
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      messageService.showMessage('error', 'Error deleting account');
+    }
+  };
+
   const handleFileUpload = (type) => {
     const file = type === 'image' ? imageFile : videoFile;
     if (!file) return;
@@ -152,6 +167,8 @@ const DriverProfile = () => {
         messageService.showMessage('error', `Error uploading ${type}`);
       });
   };
+
+  
 
   return (
     <Container className="mt-5">
@@ -292,6 +309,9 @@ const DriverProfile = () => {
                   Save Changes
                 </Button>
               )}
+              <Button variant="danger" className="mt-3" onClick={() => setShowDeleteModal(true)}>
+                Delete Account
+              </Button>
             </Form>
           </Card>
         </Col>
@@ -324,6 +344,19 @@ const DriverProfile = () => {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setVideoModal(false)}>Cancel</Button>
           <Button variant="primary" onClick={() => handleFileUpload('video')}>Upload</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Account Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete your account? This action cannot be undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+          <Button variant="danger" onClick={handleDeleteAccount}>Delete</Button>
         </Modal.Footer>
       </Modal>
     </Container>

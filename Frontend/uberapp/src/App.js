@@ -27,6 +27,7 @@ import AddAdmin from "./components/Auth/AdminAuth/AddAdmin";
 import Bills from "./components/AdminDashboard/Filter/Bills";
 import UberHome from "./components/Home/UberHome";
 import Signup from "./components/Auth/Signup/Signup";
+import RideStatus from "./components/Rider/RideStatus/RideStatus";
 window.store = store;
 
 function App() {
@@ -42,12 +43,18 @@ function App() {
           {/* Auth Routes  */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/logout" element={<Navigate to="/uberhome" replace />} />
           {/* Customer Routes */} 
           <Route path="/customer/home" element={<Home />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
           <Route path="/customer/manageaccount/:id" element={<CustomerProfile />} />
           <Route path="/customer/trips" element={<TripsList />} />
           <Route path="/customer/billing" element={<Billing />} />
+          <Route path="/customer/payments" element={<PaymentList />} />
+          <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
+          <Route path="/customer/ridestatus" element={<RideStatus />} />
+
+          {/* Admin Routes */}
           <Route path="/admin/home" element={<AdminHome />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/usersinfo" element={<Users />} />
@@ -57,10 +64,7 @@ function App() {
           <Route path="/admin/add-customer" element={<AddCustomer />} />
           <Route path="/admin/add-admin" element={<AddAdmin />} />
           <Route path="/admin/billsinfo" element={<Bills />} />
-          <Route path="/logout" element={<Navigate to="/uberhome" replace />} />
-          <Route path="/driver/signup" element={<DriverSignup />} />
-          <Route path="/customer/payments" element={<PaymentList />} />
-          <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
+
 
           {/* Driver Routes */}
           <Route path="/driver" element={<Driver/>} />
@@ -69,6 +73,7 @@ function App() {
           <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />
           <Route path="/uberhome" element={<UberHome />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
+
         </Routes>
         </div>
       </div>

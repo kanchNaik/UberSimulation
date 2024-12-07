@@ -12,7 +12,7 @@ const UberHeader = () => {
   return (
     <header className="header">
       {/* Logo */}
-      <div className="logo">Uber</div>
+      <div className="logo"><a href="/uberhome">Uber</a></div>
 
       {/* Navigation */}
       <nav className="nav">
