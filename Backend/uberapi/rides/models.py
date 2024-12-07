@@ -7,6 +7,8 @@ from django.conf import settings
 class Location(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
+    locationName = models.CharField(max_length=100)
+    locationCity = models.CharField(max_length=100)
 
     def __str__(self):
         return f"Lat: {self.latitude}, Lon: {self.longitude}"

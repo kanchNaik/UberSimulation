@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import Ride, RideEventImage, Review
-from .serializers import RideSerializer, RideEventImageSerializer, ReviewSerializer
+from .serializers import RideSerializer, RideEventImageSerializer, ReviewSerializer, RideSearchSerializer
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from customer.models import Customer
@@ -9,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
+from datetime import datetime
+from django.db.models import Q
+from accounts.models import User
 
 class RideViewSet(viewsets.ModelViewSet):
     """
@@ -93,6 +96,89 @@ class RideViewSet(viewsets.ModelViewSet):
         return Response({"message": "Ride deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     
 
+    @action(detail=False, methods=["get"], url_path="ride-search")
+    def ride_search_api(self, request):
+        queryset = Ride.objects.all()
+
+        # Filter by driver or customer
+        driver_name = request.query_params.get('driver')
+        customer_name = request.query_params.get('customer')
+        if driver_name:
+            queryset = queryset.filter(
+                Q(driver__first_name__icontains=driver_name) |
+                Q(driver__last_name__icontains=driver_name)
+            )
+
+        if customer_name:
+            queryset = queryset.filter(
+                Q(customer__first_name__icontains=customer_name) |
+                Q(customer__last_name__icontains=customer_name)
+            )
+
+        # Filter by validation status
+        validate = request.query_params.get('validate')
+        if validate is not None:
+            queryset = queryset.filter(validate=validate.lower() == 'true')
+
+        # Filter by pickup and dropoff times
+        pickup_start = request.query_params.get('pickup_start')
+        pickup_end = request.query_params.get('pickup_end')
+        dropoff_start = request.query_params.get('dropoff_start')
+        dropoff_end = request.query_params.get('dropoff_end')
+
+        if pickup_start:
+            queryset = queryset.filter(pickup_time__gte=datetime.fromisoformat(pickup_start))
+        if pickup_end:
+            queryset = queryset.filter(pickup_time__lte=datetime.fromisoformat(pickup_end))
+        if dropoff_start:
+            queryset = queryset.filter(dropoff_time__gte=datetime.fromisoformat(dropoff_start))
+        if dropoff_end:
+            queryset = queryset.filter(dropoff_time__lte=datetime.fromisoformat(dropoff_end))
+
+        # Filter by distance
+        distance_min = request.query_params.get('distance_min')
+        distance_max = request.query_params.get('distance_max')
+        if distance_min:
+            queryset = queryset.filter(distance__gte=float(distance_min))
+        if distance_max:
+            queryset = queryset.filter(distance__lte=float(distance_max))
+
+        # Filter by fare
+        fare_min = request.query_params.get('fare_min')
+        fare_max = request.query_params.get('fare_max')
+        if fare_min:
+            queryset = queryset.filter(fare__gte=float(fare_min))
+        if fare_max:
+            queryset = queryset.filter(fare__lte=float(fare_max))
+
+        # Filter by pickup and dropoff location name or city
+        pickup_name = request.query_params.get('pickup_name')
+        pickup_city = request.query_params.get('pickup_city')
+        dropoff_name = request.query_params.get('dropoff_name')
+        dropoff_city = request.query_params.get('dropoff_city')
+
+        if pickup_name:
+            print(pickup_name)
+            serializer = RideSearchSerializer(queryset, many=True)
+            print(serializer.data)
+            queryset = queryset.filter(pickup_location__locationName__icontains=pickup_name)
+        if pickup_city:
+            queryset = queryset.filter(pickup_location__locationCity__icontains=pickup_city)
+
+        if dropoff_name:
+            queryset = queryset.filter(dropoff_location__locationName__icontains=dropoff_name)
+        if dropoff_city:
+            queryset = queryset.filter(dropoff_location__locationCity__icontains=dropoff_city)
+
+        # Ordering
+        ordering = request.query_params.get('ordering', '-pickup_time')
+        queryset = queryset.order_by(ordering)
+
+        # Serialize and return the results
+        serializer = RideSearchSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class RideEventImageViewSet(viewsets.ModelViewSet):
     queryset = RideEventImage.objects.all()
     serializer_class = RideEventImageSerializer
@@ -171,3 +257,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         reviews = Review.objects.filter(ride_id=ride_id)
         serializer = self.get_serializer(reviews, many=True)
         return Response(serializer.data)
+
+
+    

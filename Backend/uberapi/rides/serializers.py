@@ -4,19 +4,19 @@ from .models import Ride, Location, RideEventImage, Review
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
-        fields = ['latitude', 'longitude']
+        fields = ['latitude', 'longitude', 'locationName', 'locationCity']
 
 class RideSerializer(serializers.ModelSerializer):
     pickup_location = LocationSerializer(required=False)
     dropoff_location = LocationSerializer(required=False)
 
     # Adding new fields for pickup and dropoff times
-    pickup_time = serializers.TimeField(required=False)
-    dropoff_time = serializers.TimeField(required=False)
+    pickup_time = serializers.DateTimeField(required=False)
+    dropoff_time = serializers.DateTimeField(required=False)
 
     class Meta:
         model = Ride
-        fields = ['ride_id', 'pickup_location', 'dropoff_location', 'date_time', 'pickup_time', 'dropoff_time', 'customer', 'driver']
+        fields = ['ride_id', 'pickup_location', 'dropoff_location', 'date_time', 'pickup_time', 'dropoff_time', 'customer', 'driver', 'fare', 'distance']
         read_only_fields = ['ride_id']
 
     def create(self, validated_data):
@@ -97,3 +97,20 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Rating must be between 1 and 5.")
 
         return data
+    
+
+class RideSearchSerializer(serializers.ModelSerializer):
+    driver_name = serializers.SerializerMethodField()
+    customer_name = serializers.SerializerMethodField()
+    pickup_location = LocationSerializer()  # Nested serializer for pickup_location
+    dropoff_location = LocationSerializer() 
+    
+    class Meta:
+        model = Ride
+        fields = ['ride_id', 'pickup_location', 'dropoff_location', 'date_time', 'pickup_time', 'dropoff_time', 'customer', 'driver', 'driver_name', 'customer_name', 'fare', 'distance']
+
+    def get_driver_name(self, obj):
+        return f"{obj.driver.first_name} {obj.driver.last_name}".strip()
+
+    def get_customer_name(self, obj):
+        return f"{obj.customer.first_name} {obj.customer.last_name}".strip()

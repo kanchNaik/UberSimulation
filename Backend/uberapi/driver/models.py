@@ -29,7 +29,8 @@ class Driver(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     is_available = models.BooleanField(default=True)
-
+    locationName = models.CharField(max_length=100)
+    locationCity = models.CharField(max_length=100)
 
 
     def save(self, *args, **kwargs):
