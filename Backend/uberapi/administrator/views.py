@@ -25,12 +25,12 @@ class AdministratorViewSet(viewsets.ModelViewSet):
     serializer_class = AdministratorSerializer
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action == 'create' or self.action == 'list':
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get_authentication_classes(self):
-        if self.action == 'create':
+        if self.action == 'create' or self.action == 'list':
             return []
         return [JWTAuthentication()]
     

@@ -10,7 +10,7 @@ class VehicleSerializer(serializers.ModelSerializer):
 class DriverLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
-        fields = ['latitude', 'longitude']
+        fields = ['latitude', 'longitude', 'locationName', 'locationCity']
 
 class DriverRegistrationSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True)
@@ -39,6 +39,8 @@ class DriverRegistrationSerializer(serializers.ModelSerializer):
             'latitude',
             'longitude',
             'is_available',
+            'locationName',
+            'locationCity',
         ]
 
     def validate(self, data):
@@ -144,7 +146,7 @@ class DriverListSerializer(serializers.ModelSerializer):
         model = Driver
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'address', 'city', 'state',
-            'zip_code', 'license_number', 'profile_image', 'introduction_video', 'vehicle', 'rating', 'latitude', 'longitude',
+            'zip_code', 'license_number', 'profile_image', 'introduction_video', 'vehicle', 'rating', 'latitude', 'longitude', 'locationName', 'locationCity',
             'is_available'
         ]
 
@@ -161,7 +163,7 @@ class CreateDriverSerializer(serializers.ModelSerializer):
 class NearbyDriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
-        fields = ['id', 'first_name', 'last_name', 'latitude', 'longitude', 'phone_number', 'license_number', 'profile_image', 'vehicle', 'rating']
+        fields = ['id', 'first_name', 'last_name', 'latitude', 'longitude', 'phone_number', 'license_number', 'profile_image', 'vehicle', 'rating', 'locationName', 'locationCity']
 
 
 class DriverIntroVideoSerializer(serializers.ModelSerializer):

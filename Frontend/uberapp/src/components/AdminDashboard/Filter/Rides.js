@@ -1,48 +1,50 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./Rides.css"; // Add CSS for styling
+import "./Rides.css";
+import { BASE_API_URL } from "../../../Setupconstants";
+import Cookies from "js-cookie";
+
+const accessToken = Cookies.get("access_token");
 
 const Rides = () => {
-  const [rides, setRides] = useState([]); // To store all rides
-  const [filteredRides, setFilteredRides] = useState([]); // To store filtered rides
+  const [rides, setRides] = useState([]);
   const [filters, setFilters] = useState({
-    validate: "",
-    pickup_time: "",
-    dropoff_time: "",
-    distance: "",
-    source_location: "",
-    destination_location: "",
+    driver: "",
+    customer: "",
+    pickup_start: "",
+    pickup_end: "",
+    dropoff_start: "",
+    dropoff_end: "",
+    pickup_name: "",
+    pickup_city: "",
+    dropoff_name: "",
+    dropoff_city: "",
   });
 
-  // Fetch data from the backend
+  const fetchRides = async () => {
+    try {
+      const queryParams = new URLSearchParams(
+        Object.entries(filters).filter(([_, value]) => value !== "")
+      ).toString();
+      const response = await axios.get(
+        `${BASE_API_URL}/api/rides/ride-search/?${queryParams}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setRides(Array.isArray(response.data) ? response.data : [response.data]);
+    } catch (error) {
+      console.error("Error fetching rides:", error);
+      setRides([]);
+    }
+  };
+
   useEffect(() => {
-    const fetchRides = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/rides"); // Replace with your API endpoint
-        setRides(response.data);
-        setFilteredRides(response.data); // Initialize filtered list
-      } catch (error) {
-        console.error("Error fetching rides:", error);
-      }
-    };
     fetchRides();
   }, []);
 
-  // Apply filters when the "Search" button is clicked
-  const handleSearch = () => {
-    const filtered = rides.filter((ride) =>
-      Object.keys(filters).every((key) => {
-        if (!filters[key]) return true; // Skip empty filters
-        return ride[key]
-          ?.toString()
-          .toLowerCase()
-          .includes(filters[key].toLowerCase());
-      })
-    );
-    setFilteredRides(filtered);
-  };
-
-  // Handle input change for filters
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({
@@ -51,52 +53,83 @@ const Rides = () => {
     }));
   };
 
+  const handleSearch = () => {
+    fetchRides();
+  };
+
   return (
     <div className="rides-container">
       <h1>Rides</h1>
 
-      {/* Filters Section */}
       <div className="filters">
         <input
           type="text"
-          placeholder="Validate"
-          name="validate"
-          value={filters.validate}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="datetime-local"
-          placeholder="Pickup Time"
-          name="pickup_time"
-          value={filters.pickup_time}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="datetime-local"
-          placeholder="Dropoff Time"
-          name="dropoff_time"
-          value={filters.dropoff_time}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="number"
-          placeholder="Distance (in miles)"
-          name="distance"
-          value={filters.distance}
+          placeholder="Driver Name"
+          name="driver"
+          value={filters.driver}
           onChange={handleFilterChange}
         />
         <input
           type="text"
-          placeholder="Source Location"
-          name="source_location"
-          value={filters.source_location}
+          placeholder="Customer Name"
+          name="customer"
+          value={filters.customer}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="datetime-local"
+          placeholder="Pickup Start"
+          name="pickup_start"
+          value={filters.pickup_start}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="datetime-local"
+          placeholder="Pickup End"
+          name="pickup_end"
+          value={filters.pickup_end}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="datetime-local"
+          placeholder="Dropoff Start"
+          name="dropoff_start"
+          value={filters.dropoff_start}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="datetime-local"
+          placeholder="Dropoff End"
+          name="dropoff_end"
+          value={filters.dropoff_end}
           onChange={handleFilterChange}
         />
         <input
           type="text"
-          placeholder="Destination Location"
-          name="destination_location"
-          value={filters.destination_location}
+          placeholder="Pickup Location Name"
+          name="pickup_name"
+          value={filters.pickup_name}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="text"
+          placeholder="Pickup Location City"
+          name="pickup_city"
+          value={filters.pickup_city}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="text"
+          placeholder="Dropoff Location Name"
+          name="dropoff_name"
+          value={filters.dropoff_name}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="text"
+          placeholder="Dropoff Location City"
+          name="dropoff_city"
+          value={filters.dropoff_city}
           onChange={handleFilterChange}
         />
         <button className="search-button" onClick={handleSearch}>
@@ -104,41 +137,50 @@ const Rides = () => {
         </button>
       </div>
 
-      {/* Rides Table */}
       <table className="rides-table">
         <thead>
           <tr>
             <th>ID</th>
             <th>Driver</th>
             <th>Customer</th>
-            <th>Validate</th>
+            <th>Date Time</th>
             <th>Pickup Time</th>
             <th>Dropoff Time</th>
-            <th>Distance</th>
-            <th>Source Location</th>
-            <th>Destination Location</th>
-            <th>Fare</th>
+            <th>Pickup Location</th>
+            <th>Dropoff Location</th>
           </tr>
         </thead>
         <tbody>
-          {filteredRides.length > 0 ? (
-            filteredRides.map((ride) => (
-              <tr key={ride.id}>
-                <td>{ride.id}</td>
-                <td>{ride.driver}</td>
-                <td>{ride.customer}</td>
-                <td>{ride.validate}</td>
-                <td>{ride.pickup_time}</td>
-                <td>{ride.dropoff_time}</td>
-                <td>{ride.distance}</td>
-                <td>{ride.source_location}</td>
-                <td>{ride.destination_location}</td>
-                <td>{ride.fare}</td>
+          {rides.length > 0 ? (
+            rides.map((ride) => (
+              <tr key={ride.ride_id}>
+                <td>{ride.ride_id}</td>
+                <td>{ride.driver_name}</td>
+                <td>{ride.customer_name}</td>
+                <td>
+                  {ride.date_time ? new Date(ride.date_time).toLocaleString() : "N/A"}
+                </td>
+                <td>
+                  {ride.pickup_time ? new Date(ride.pickup_time).toLocaleString() : "N/A"}
+                </td>
+                <td>
+                  {ride.dropoff_time ? new Date(ride.dropoff_time).toLocaleString() : "N/A"}
+                </td>
+                <td>
+                  {ride.pickup_location
+                    ? `${ride.pickup_location.locationName}, ${ride.pickup_location.locationCity}`
+                    : "N/A"}
+                </td>
+                <td>
+                  {ride.dropoff_location
+                    ? `${ride.dropoff_location.locationName}, ${ride.dropoff_location.locationCity}`
+                    : "N/A"}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="10" className="no-results">
+              <td colSpan="8" className="no-results">
                 No rides found.
               </td>
             </tr>
