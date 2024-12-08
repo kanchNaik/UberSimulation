@@ -168,3 +168,8 @@ class DriverIntroVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = ['introduction_video']
+
+class DriverImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['profile_image']

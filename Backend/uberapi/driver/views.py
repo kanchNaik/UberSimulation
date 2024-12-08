@@ -4,10 +4,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from .models import Driver, Vehicle
 from .serializers import DriverRegistrationSerializer, DriverListSerializer, \
-    DriverLocationSerializer, NearbyDriverSerializer, DriverIntroVideoSerializer
+    DriverLocationSerializer, NearbyDriverSerializer, DriverIntroVideoSerializer, DriverImageSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import authentication_classes, permission_classes, parser_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rides.models import Ride
@@ -19,6 +19,7 @@ from kafka import KafkaProducer
 import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class DriverViewSet(viewsets.ModelViewSet):
     """
@@ -170,7 +171,7 @@ class DriverViewSet(viewsets.ModelViewSet):
         serializer = DriverListSerializer(drivers, many=True)
         return Response(serializer.data, status=200)
     
-    @action(detail=True, methods=['post'], url_path='upload-video')
+    @action(detail=True, methods=['patch'], url_path='upload-video')
     def upload_intro_video(self, request, pk=None):
         """
         API to upload an introductory video for a driver.
@@ -189,6 +190,20 @@ class DriverViewSet(viewsets.ModelViewSet):
         except Driver.DoesNotExist:
             return Response({"error": "Driver not found."}, status=404)
     
+    @action(detail=True, methods=['patch'], url_path='upload-image')
+    @parser_classes([MultiPartParser, FormParser])
+    def upload_driver_image(self, request, pk=None):
+        try:
+            driver = self.get_object()
+        except Driver.DoesNotExist:
+            return Response({'error': 'Driver not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DriverImageSerializer(driver, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     @action(detail=True, methods=['get'], url_path='stats')
     def get_driver_stats(self, request, pk=None):
         try:

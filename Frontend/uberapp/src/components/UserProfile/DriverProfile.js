@@ -116,9 +116,14 @@ const DriverProfile = () => {
   };
 
   const handleSave = () => {
+    const profileToSave = {
+      ...profile,
+      profile_image: null,
+      introduction_video: null
+    };
     setEditMode(false);
     axios
-      .patch(`${BASE_API_URL}/api/drivers/${id}/`, profile, {
+      .patch(`${BASE_API_URL}/api/drivers/${id}/`, profileToSave, {
         headers: { 'Authorization': `Bearer ${token}` },
       })
       .then(() => messageService.showMessage('success', 'Profile updated successfully!'))
@@ -142,7 +147,7 @@ const DriverProfile = () => {
     }
   };
 
-  const handleFileUpload = (type) => {
+  const handleVideoFileUpload = (type) => {
     const file = type === 'image' ? imageFile : videoFile;
     if (!file) return;
 
@@ -150,13 +155,35 @@ const DriverProfile = () => {
     formData.append(type === 'image' ? 'profile_image' : 'introduction_video', file);
 
     axios
-      .put(`${BASE_API_URL}/api/drivers/${type}-upload/`, formData, {
+      .patch(`${BASE_API_URL}/api/drivers/${id}/upload-video/`, formData, {
         headers: {
-          'X-CSRFToken': Cookies.get('csrftoken'),
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
-        },
-        withCredentials: true,
+        }
+      })
+      .then((response) => {
+        // setProfile(response.data);
+        type === 'image' ? setImageModal(false) : setVideoModal(false);
+      })
+      .catch((error) => {
+        console.error(`Error uploading ${type}:`, error);
+        messageService.showMessage('error', `Error uploading ${type}`);
+      });
+  };
+
+  const handleImageFileUpload = (type) => {
+    const file = type === 'image' ? imageFile : videoFile;
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append(type === 'image' ? 'profile_image' : 'introduction_video', file);
+
+    axios
+      .patch(`${BASE_API_URL}/api/drivers/${id}/upload-image/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        }
       })
       .then((response) => {
         setProfile(response.data);
@@ -167,8 +194,6 @@ const DriverProfile = () => {
         messageService.showMessage('error', `Error uploading ${type}`);
       });
   };
-
-  
 
   return (
     <Container className="mt-5">
@@ -280,25 +305,25 @@ const DriverProfile = () => {
                 <Col md={3}>
                   <Form.Group controlId="formVehicleMake">
                     <Form.Label>Make</Form.Label>
-                    <Form.Control type="text" name="make" value={profile.vehicle.make || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
+                    <Form.Control type="text" name="make" value={profile.vehicle?.make || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
                   </Form.Group>
                 </Col>
                 <Col md={3}>
                   <Form.Group controlId="formVehicleModel">
                     <Form.Label>Model</Form.Label>
-                    <Form.Control type="text" name="model" value={profile.vehicle.model || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
+                    <Form.Control type="text" name="model" value={profile.vehicle?.model || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
                   </Form.Group>
                 </Col>
                 <Col md={3}>
                   <Form.Group controlId="formVehicleYear">
                     <Form.Label>Year</Form.Label>
-                    <Form.Control type="number" name="year" value={profile.vehicle.year || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
+                    <Form.Control type="number" name="year" value={profile.vehicle?.year || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
                   </Form.Group>
                 </Col>
                 <Col md={3}>
                   <Form.Group controlId="formVehicleLicensePlate">
                     <Form.Label>License Plate</Form.Label>
-                    <Form.Control type="text" name="license_plate" value={profile.vehicle.license_plate || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
+                    <Form.Control type="text" name="license_plate" value={profile.vehicle?.license_plate || ''} onChange={handleVehicleInputChange} readOnly={!editMode} />
                   </Form.Group>
                 </Col>
               </Row>
@@ -329,7 +354,7 @@ const DriverProfile = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setImageModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={() => handleFileUpload('image')}>Upload</Button>
+          <Button variant="primary" onClick={() => handleImageFileUpload('image')}>Upload</Button>
         </Modal.Footer>
       </Modal>
       <Modal show={videoModal} onHide={() => setVideoModal(false)}>
@@ -344,7 +369,7 @@ const DriverProfile = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setVideoModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={() => handleFileUpload('video')}>Upload</Button>
+          <Button variant="primary" onClick={() => handleVideoFileUpload('video')}>Upload</Button>
         </Modal.Footer>
       </Modal>
 

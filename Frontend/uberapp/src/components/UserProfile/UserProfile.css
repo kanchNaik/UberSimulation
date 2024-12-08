@@ -8,6 +8,10 @@
     font-family: Arial, sans-serif;
 }
 
+.bi-pencil {
+    font-size: 14px;
+}
+
 /* Card container with shadow and rounded edges */
 .card {
     background: #ffffff;

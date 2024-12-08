@@ -3,6 +3,7 @@ import "./DriverSidebar.css"; // Updated styling for Sidebar
 import { FaBars, FaUser, FaCar, FaReceipt, FaCog, FaSignOutAlt, FaHouseUser, FaHouzz, FaLaptopHouse } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false); // Default state: closed
@@ -36,7 +37,7 @@ const Sidebar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/driver/manageaccount/:id">
+              <Link to={`/driver/manageaccount/${Cookies.get("user_id")}`}>
                 <MdDashboard className="icon" /> Profile
               </Link>
             </li>
