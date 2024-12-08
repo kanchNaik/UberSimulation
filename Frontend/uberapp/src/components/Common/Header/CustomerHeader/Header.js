@@ -3,15 +3,28 @@ import { FaCar, FaBox, FaUserCircle, FaChevronDown } from "react-icons/fa";
 import "./HeaderStyles.css";
 import { NavLink } from "react-router-dom";
 import cookies from "js-cookie";
+import { useAuth } from '../../../../AuthContext';
+import { useNavigate  } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { LOGOUT } from "../../../../actionType";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const { logout } = useAuth();
   const user_id = cookies.get("user_id");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const toggleDropdown = () => {
     console.log("Dropdown toggled");
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    dispatch({ type: LOGOUT });
+    setIsDropdownOpen(false);
+    navigate('/login');
   };
 
   return (
@@ -58,6 +71,7 @@ const Header = () => {
             Manage account
           </NavLink></div>
             <div className="dropdown-item">Settings</div>
+            <div className="dropdown-item" onClick={handleLogout}>Logout</div>
           </div>
         )}
       </div>
