@@ -12,7 +12,7 @@ from rest_framework.permissions import AllowAny
 from datetime import datetime
 from django.db.models import Q
 from accounts.models import User
-from haversinex import haversine
+from haversine import haversine
 from driver.models import Driver
 from PricePredictionSystem import PricePrediction
 class RideViewSet(viewsets.ModelViewSet):

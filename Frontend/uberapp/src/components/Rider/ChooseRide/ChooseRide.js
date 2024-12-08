@@ -16,8 +16,6 @@ import wav from "./uberwav.jpg";
 import assist from "./uberassist.jpg";
 import carSeat from "./ubercarseat.jpg";
 import applePay from "./applepay.jpg";
-import AddPaymentModal from "../../Payments/AddPaymentModal";
-import PaymentListModal from "../../Payments/PaymentListModal";
 
 const ChooseRide = ({ onClose }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -188,7 +186,6 @@ const ChooseRide = ({ onClose }) => {
           <button className="request-ride-button" onClick={handleRequestClick}>
             Request
           </button>
-          <button onClick={handleAddPaymentClick}>Add Payment Method</button>
         </div>
       </div>
 

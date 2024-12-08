@@ -11,7 +11,7 @@ class PricePrediction:
         self.distance = distance
 
     def base_price(self):
-        price = self.rate_per_mile * self.distance
+        price = self.rate_per_mile * self.distance + self.rate_per_minute * self.time
         return max(price, 3.0)
 
     def supply_surge_factor(self):
