@@ -168,7 +168,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         serialized_customers = CustomerSerializer(queryset, many=True)
         return Response(serialized_customers.data)
 
-    @action(detail=True, methods=['GET'], url_path='payment-methods')
+    @action(detail=True, methods=['get'], url_path='payment-methods')
     def payment_methods(self, request, pk=None):
         """Get all payment methods for a customer"""
         customer = self.get_object()
