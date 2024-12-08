@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { FaCar, FaBox, FaUserCircle, FaChevronDown } from "react-icons/fa";
 import "./HeaderStyles.css";
+import { NavLink } from "react-router-dom";
+import cookies from "js-cookie";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const user_id = cookies.get("user_id");
 
   const toggleDropdown = () => {
     console.log("Dropdown toggled");
@@ -45,14 +49,14 @@ const Header = () => {
             <div className="dropdown-item">Promos</div>
             <div className="dropdown-item">Support</div>
             <div>
-              <a
-                href="/customer/manageaccount/:id"
-                className="dropdown-item"
-                role="menuitem"
-                aria-label="Manage account link"
-              >
-                Manage account
-              </a></div>
+            <NavLink
+            to={`/customer/manageaccount/${user_id}`}
+            className="dropdown-item"
+            role="menuitem"
+            aria-label="Manage account link"
+          >
+            Manage account
+          </NavLink></div>
             <div className="dropdown-item">Settings</div>
           </div>
         )}
