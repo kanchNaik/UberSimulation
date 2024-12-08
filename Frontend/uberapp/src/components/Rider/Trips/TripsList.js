@@ -1,80 +1,116 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
-import Header from "../../Common/Header/CustomerHeader/Header"; 
-import "./TripsList.css"; // Link your custom styles
-import carIllustration from "./trips.png"; // Import the image
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Header from "../../Common/Header/CustomerHeader/Header";
+import "./TripsList.css";
+import carIllustration from "./trips.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faUser } from "@fortawesome/free-solid-svg-icons";
-
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+import { BASE_API_URL } from "../../../Setupconstants";
+import Cookies from 'js-cookie';
+import TripDetails from "./TripDetails";
+import Modal from "../../Common/Modal/Modal";
 
 const TripsList = () => {
-  const [personalDropdown, setPersonalDropdown] = useState(false);
   const [tripDropdown, setTripDropdown] = useState(false);
-  const [personalFilter, setPersonalFilter] = useState("Personal");
   const [tripFilter, setTripFilter] = useState("All Trips");
+  const [trips, setTrips] = useState([]);
+  const [upcomingTrips, setUpcomingTrips] = useState([]);
+  const [pastTrips, setPastTrips] = useState([]);
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
-  const handlePersonalSelect = (filter) => {
-    setPersonalFilter(filter);
-    setPersonalDropdown(false);
+  useEffect(() => {
+    fetchTrips();
+  }, []);
+
+  const fetchTrips = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/api/rides?customer_id=${Cookies.get('user_id')}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('access_token')}`
+          }
+        });
+      const data = await response.json();
+      setTrips(data);
+      
+      const currentDate = new Date();
+      setUpcomingTrips(data.filter(trip => new Date(trip.date_time) > currentDate));
+      setPastTrips(data.filter(trip => new Date(trip.date_time) <= currentDate));
+    } catch (error) {
+      console.error('Error fetching trips:', error);
+    }
   };
 
   const handleTripSelect = (filter) => {
     setTripFilter(filter);
     setTripDropdown(false);
+
+    const currentDate = new Date();
+    let filteredTrips;
+
+    switch (filter) {
+      case "All Trips":
+        filteredTrips = trips;
+        break;
+      case "Past 30 days":
+        const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+        filteredTrips = trips.filter(trip => new Date(trip.date_time) > thirtyDaysAgo && new Date(trip.date_time) <= currentDate);
+        break;
+      default:
+        const selectedMonth = new Date(filter + " 1, " + currentDate.getFullYear()).getMonth();
+        filteredTrips = trips.filter(trip => new Date(trip.date_time).getMonth() === selectedMonth);
+    }
+
+    setPastTrips(filteredTrips);
+  };
+
+  const handleTripDetails = (trip) => {
+    setSelectedTrip(trip);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedTrip(null);
   };
 
   return (
     <div className="uber-trips-page">
-      {/* Header */}
       <Header />
 
       <main className="uber-main">
         <div className="trips-content">
-          {/* Upcoming Trips Section */}
           <section className="upcoming-trips">
             <h2>Upcoming</h2>
-            <div className="trip-banner">
-              <img src={carIllustration} alt="Car Illustration" />
-            </div>
-            <h2>You have no upcoming trips</h2>
-            <button
-              className="request-ride-button"
-              onClick={() => navigate("/customer/home")} // Route to customer home
-            >
-              Reserve ride
-            </button>
+            {upcomingTrips.length > 0 ? (
+              upcomingTrips.map(trip => (
+                <div key={trip.id} className="trip-item"  onClick={() => handleTripDetails(trip)}>
+                  <h3>{trip.destination}</h3>
+                  <p>{new Date(trip.date_time).toLocaleString()}</p>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="trip-banner">
+                  <img src={carIllustration} alt="Car Illustration" />
+                </div>
+                <h2>You have no upcoming trips</h2>
+                <button
+                  className="request-ride-button"
+                  onClick={() => navigate("/customer/home")}
+                >
+                  Reserve ride
+                </button>
+              </>
+            )}
           </section>
 
-          {/* Past Trips Section */}
           <section className="past-trips">
             <h2>Past</h2>
             <div className="trip-filters">
-              {/* Personal Filter */}
-              <div className="filter-dropdown">
-                <button
-                  className="filter-button"
-                  onClick={() => setPersonalDropdown(!personalDropdown)}
-                >
-                  <FontAwesomeIcon icon={faUser} /> {personalFilter} ▾
-                </button>
-                {personalDropdown && (
-                  <div className="dropdown-menu">
-                    <div onClick={() => handlePersonalSelect("Personal")}>
-                      Personal
-                    </div>
-                    <div onClick={() => handlePersonalSelect("Business")}>
-                      Business
-                    </div>
-                    <div onClick={() => handlePersonalSelect("Family")}>
-                      Family
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Trip Filter */}
               <div className="filter-dropdown">
                 <button
                   className="filter-button"
@@ -113,37 +149,40 @@ const TripsList = () => {
               </div>
             </div>
 
-            <h3>Dec 2</h3>
-            <div className="past-trip-item">
-              <div className="past-trip-map">
-                <img src="https://via.placeholder.com/150" alt="Map Placeholder" />
-              </div>
-              <div className="past-trip-info">
-                <h4>San José Mineta International Airport (SJC)</h4>
-                <p>Dec 2 • 1:59 PM</p>
-                <p>$0.00 • Canceled</p>
-                <div className="past-trip-buttons">
-                  <button>Help</button>
-                  <button>Details</button>
-                  <button>Rebook</button>
+            {pastTrips.map(trip => (
+              <div key={trip.id} className="past-trip-item"  onClick={() => handleTripDetails(trip)}>
+                <div className="past-trip-map">
+                  <img src={trip.mapImage || "https://via.placeholder.com/150"} alt="Trip Map" />
+                </div>
+                <div className="past-trip-info">
+                  <h4>{trip.dropoff_location.locationName}</h4>
+                  <p>{new Date(trip.date_time).toLocaleString()}</p>
+                  <p>${trip.fare ? trip.fare.toFixed(2) : 'N/A'} • {trip.status}</p>
+                  <div className="past-trip-buttons">
+                    <button>Help</button>
+                    <button>Details</button>
+                    <button>Rebook</button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </section>
         </div>
 
-        {/* Sidebar Section */}
         <div className="ride-promo">
           <img src={carIllustration} alt="Car Illustration" className="promo-image" />
           <h3>Get a ride in minutes</h3>
           <p>Book an Uber from a web browser, no app install necessary.</p>
           <button
             className="request-ride-button"
-            onClick={() => navigate("/customer/home")} // Route to customer home
+            onClick={() => navigate("/customer/home")}
           >
             Request a Ride
           </button>
         </div>
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          {selectedTrip && <TripDetails tripData={selectedTrip} />}
+        </Modal>
       </main>
     </div>
   );

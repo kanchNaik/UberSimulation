@@ -16,7 +16,7 @@ class RideSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ride
-        fields = ['ride_id', 'pickup_location', 'dropoff_location', 'date_time', 'pickup_time', 'dropoff_time', 'customer', 'driver', 'fare', 'distance']
+        fields = ['ride_id', 'pickup_location', 'dropoff_location', 'date_time', 'pickup_time', 'dropoff_time', 'customer', 'driver', 'fare', 'distance', 'status']
         read_only_fields = ['ride_id']
 
     def create(self, validated_data):
@@ -107,7 +107,7 @@ class RideSearchSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Ride
-        fields = ['ride_id', 'pickup_location', 'dropoff_location', 'date_time', 'pickup_time', 'dropoff_time', 'customer', 'driver', 'driver_name', 'customer_name', 'fare', 'distance']
+        fields = ['ride_id', 'pickup_location', 'dropoff_location', 'date_time', 'pickup_time', 'dropoff_time', 'customer', 'driver', 'driver_name', 'customer_name', 'fare', 'distance', 'status']
 
     def get_driver_name(self, obj):
         return f"{obj.driver.first_name} {obj.driver.last_name}".strip()

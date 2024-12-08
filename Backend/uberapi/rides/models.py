@@ -33,6 +33,10 @@ class Ride(models.Model):
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='rides')
     fare = models.FloatField()
     distance = models.FloatField()
+    status = models.CharField(
+        max_length=20,
+        choices=[('active', 'Active'), ('completed', 'Completed'), ('cancelled', 'Cancelled')]
+    )
 
     def __str__(self):
         return f"Ride {self.ride_id} - Customer {self.customer.id}, Driver {self.driver.id}"
