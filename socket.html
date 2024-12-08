@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <div id="messages"></div>
+    <script>
+        const socket = new WebSocket('ws://127.0.0.1:8000/ws/drivers/');
+
+        socket.onmessage = function(event) {
+            console.log("event: ", event)
+            const messages = document.getElementById('messages');
+            const message = document.createElement('div');
+            message.textContent = event.data;
+            messages.appendChild(message);
+        };
+
+        socket.onopen = function() {
+            console.log('WebSocket connection opened');
+        };
+
+        socket.onclose = function() {
+            console.log('WebSocket connection closed');
+        };
+    </script>
+</body>
+</html>

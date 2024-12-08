@@ -211,3 +211,4 @@ class ReviewModelTest(TestCase):
         )
         self.assertEqual(review.rating, 4)
         self.assertEqual(review.review_text, "Smooth ride!")
+   
