@@ -4,6 +4,7 @@ import Footer from "../Common/Footer/Footer";
 import Map from "../Common/Map/Map";
 import AvailabilityToggle from "../DriverDashboard/AvailabilityToggle";
 import RideRequest from "../DriverDashboard/RideRequest";
+import Sidebar from "../DriverDashboard/DriverSidebar";
 
 const DriverHome = () => {
   const [rideRequests, setRideRequests] = useState([
@@ -49,6 +50,7 @@ const DriverHome = () => {
   return (
     <>
       <Header />
+
       <div style={{ padding: "20px" }}>
         <Map />
         <p>Location:</p>
@@ -63,6 +65,7 @@ const DriverHome = () => {
           <p style={{ textAlign: "center" }}>No more ride requests available!</p>
         )}
       </div>
+      <Sidebar />
       <Footer />
     </>
   );
