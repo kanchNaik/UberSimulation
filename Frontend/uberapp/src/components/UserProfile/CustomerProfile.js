@@ -28,6 +28,38 @@ const CustomerProfile = () => {
   const token = Cookies.get('access_token');
   const navigate = useNavigate();
 
+  const [imageModal, setImageModal] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const imageUrl = URL.createObjectURL(file);
+      setProfile((prevProfile) => ({ ...prevProfile, profile_image: imageUrl }));
+    }
+  };
+
+  const handleImageFileUpload = () => {
+    if (!imageFile) return;
+    const formData = new FormData();
+    formData.append('profile_image', imageFile);
+
+    axios.patch(`${BASE_API_URL}/api/customers/${id}/upload-image/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      setImageModal(false);
+      messageService.showMessage('success', 'Profile image updated successfully!');
+    })
+    .catch((error) => {
+      console.error('Error uploading image:', error);
+      messageService.showMessage('error', 'Error uploading profile image');
+    });
+  };
   useEffect(() => {
     fetchCustomer();
     fetchStates();
@@ -100,6 +132,13 @@ const CustomerProfile = () => {
         <h2 className="text-center mb-4">Account Info</h2>
         <div className="text-center mb-4">
           <img src={profile.profile_image || 'https://via.placeholder.com/150'} alt="Profile" className="rounded-circle" width="150" height="150" />
+          <Button
+      variant="light"
+      className="p-1 shadow-sm position-relative bottom-0 end-0"
+      onClick={() => setImageModal(true)}
+    >
+      <i className="bi bi-pencil"></i>
+    </Button>
         </div>
         <Form>
           {/* Form fields */}
@@ -266,6 +305,25 @@ const CustomerProfile = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Modal show={imageModal} onHide={() => setImageModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Upload Profile Picture</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form.Group controlId="formFile">
+      <Form.Label>Select an image</Form.Label>
+      <Form.Control
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
+    </Form.Group>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setImageModal(false)}>Cancel</Button>
+    <Button variant="primary" onClick={handleImageFileUpload}>Upload</Button>
+  </Modal.Footer>
+</Modal>
     </Container>
   );
 };

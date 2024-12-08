@@ -5,12 +5,14 @@ from driver.models import Driver
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from geopy.distance import geodesic
-from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer, CustomerLocationSerializer, PaymentMethodSerializer
+from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer,\
+CustomerLocationSerializer, PaymentMethodSerializer, CustomerImageSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import authentication_classes, permission_classes, parser_classes
 from rest_framework.permissions import AllowAny
 from driver.serializers import NearbyDriverSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -215,3 +217,18 @@ class CustomerViewSet(viewsets.ModelViewSet):
                 {"error": "Payment method not found"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+    @action(detail=True, methods=['patch'], url_path='upload-image')
+    @parser_classes([MultiPartParser, FormParser])
+    def upload_driver_image(self, request, pk=None):
+        try:
+            customer = self.get_object()
+        except Customer.DoesNotExist:
+            return Response({'error': 'Customer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CustomerImageSerializer(customer, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

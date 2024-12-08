@@ -144,3 +144,8 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
     def validate_card_number(self, value):
         # Remove any spaces or dashes for consistent format
         return value.replace(' ', '').replace('-', '')
+
+class CustomerImageSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Customer
+            fields = ['profile_image']
