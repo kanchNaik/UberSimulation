@@ -44,7 +44,7 @@ function App() {
           {/* Auth Routes  */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/logout" element={<Navigate to="/uberhome" replace />} />
+          {/* <Route path="/logout" element={<Navigate to="/uberhome" replace />} /> */}
           {/* Customer Routes */} 
           <Route path="/customer/home" element={<Home />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
