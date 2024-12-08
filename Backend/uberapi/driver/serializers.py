@@ -34,13 +34,7 @@ class DriverRegistrationSerializer(serializers.ModelSerializer):
             'license_number',
             'profile_image',
             'introduction_video',
-            'vehicle',
-            'rating',
-            'latitude',
-            'longitude',
-            'is_available',
-            'locationName',
-            'locationCity',
+            'vehicle'
         ]
 
     def validate(self, data):
@@ -96,7 +90,11 @@ class DriverRegistrationSerializer(serializers.ModelSerializer):
         # Create vehicle if provided
         vehicle = None
         if vehicle_data:
-            vehicle = Vehicle.objects.create(**vehicle_data)
+            vehicle_serializer = VehicleSerializer(data=vehicle_data)
+            if vehicle_serializer.is_valid():
+                vehicle = vehicle_serializer.save()
+            else:
+                raise serializers.ValidationError(vehicle_serializer.errors)
 
         # Create driver profile
         driver = Driver.objects.create(user=user, vehicle=vehicle, **validated_data)

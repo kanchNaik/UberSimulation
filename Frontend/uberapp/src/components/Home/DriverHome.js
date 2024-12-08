@@ -5,8 +5,10 @@ import Map from "../Common/Map/Map";
 import AvailabilityToggle from "../DriverDashboard/AvailabilityToggle";
 import RideRequest from "../DriverDashboard/RideRequest";
 import Sidebar from "../DriverDashboard/DriverSidebar";
+import Cookies from "js-cookie";
 
 const DriverHome = () => {
+  const driverId = Cookies.get("user_id");
   const [rideRequests, setRideRequests] = useState([
     {
       id: 1,
@@ -54,7 +56,7 @@ const DriverHome = () => {
       <div style={{ padding: "20px" }}>
         <Map />
         <p>Location:</p>
-        <AvailabilityToggle driverId="driver1" />
+        <AvailabilityToggle driverId={driverId} />
         {currentRide ? (
           <RideRequest
             {...currentRide}
