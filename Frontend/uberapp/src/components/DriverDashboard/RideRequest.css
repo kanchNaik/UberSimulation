@@ -1,61 +1,115 @@
-/* Container Styling */
+/* Ride Request Card Container */
 .ride-request-container {
-    max-width: 400px;
+    max-width: 500px;
     margin: 20px auto;
     padding: 20px;
-    background: #fff;
+    background-color: #fff;
+    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
     font-family: Arial, sans-serif;
   }
   
-  /* Ride Details */
+  /* Ride Details Section */
+  .ride-details {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
   .ride-details h2 {
     font-size: 1.5rem;
-    margin-bottom: 10px;
     color: #333;
+    margin-bottom: 10px;
+    text-align: center;
   }
   
   .ride-details p {
     margin: 5px 0;
     font-size: 1rem;
     color: #555;
+    line-height: 1.5;
+  }
+  
+  /* Align Key Details in One Line */
+  .ride-details p strong {
+    color: #000;
   }
   
   /* Action Buttons */
   .action-buttons {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
   }
   
   .accept-button,
   .decline-button {
     flex: 1;
     margin: 0 5px;
-    padding: 10px 20px;
+    padding: 10px;
+    font-size: 1rem;
+    color: white;
     border: none;
     border-radius: 5px;
-    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s;
   }
   
   .accept-button {
-    background: #28a745;
-    color: white;
+    background-color: #28a745;
   }
   
   .accept-button:hover {
-    background: #218838;
+    background-color: #218838;
+    transform: scale(1.05);
   }
   
   .decline-button {
-    background: #dc3545;
-    color: white;
+    background-color: #dc3545;
   }
   
   .decline-button:hover {
-    background: #c82333;
+    background-color: #c82333;
+    transform: scale(1.05);
+  }
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Dim the background */
+    z-index: 9998; /* Ensure the overlay is above other elements */
   }
   
+  /* Modal Box */
+  .modal {
+    display: block !important;
+    background: #b7cbbc !important; /* Add a red background to ensure visibility */
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 9999 !important;
+    width: 400px !important;
+    padding: 20px !important;
+    height: auto !important;
+  }
+  /* Modal Buttons */
+  .modal-buttons button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .modal-confirm-button {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .modal-cancel-button {
+    background-color: #dc3545;
+    color: white;
+  }
