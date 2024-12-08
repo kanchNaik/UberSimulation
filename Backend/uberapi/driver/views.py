@@ -15,12 +15,17 @@ from Billing.models import Bill
 from django.db.models import Sum, Avg, Count
 from django.utils.timezone import now, timedelta
 from django.db.models import Q
+from kafka import KafkaProducer
+import json
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class DriverViewSet(viewsets.ModelViewSet):
     """
     ViewSet for handling CRUD operations for Driver.
     """
     queryset = Driver.objects.all()
+    channel_layer = get_channel_layer()
     
     def get_serializer_class(self):
         """
@@ -68,6 +73,8 @@ class DriverViewSet(viewsets.ModelViewSet):
         """
         Handles driver registration.
         """
+        print("POST Request data:")
+        print(request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             driver = serializer.save()
@@ -103,7 +110,20 @@ class DriverViewSet(viewsets.ModelViewSet):
         driver.user.delete()  # Deletes the related User as well
         driver.delete()
         return Response({"message": "Driver deleted successfully!"}, status=status.HTTP_200_OK)
+
+    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+                            value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+
+    def send_to_kafka(self, message_object):
+        self.producer.send('available-drivers', message_object)
+        return Response({"status": "Driver added to Kafka"})
     
+    def send_to_websocket(self, message_object):
+        async_to_sync(self.channel_layer.group_send)("group_available-drivers", {
+            "type": "send_message",
+            "message": message_object
+        })
+            
 
     @action(detail=True, methods=['put'], url_path='set-location')
     def set_location(self, request, pk=None):
@@ -234,6 +254,14 @@ class DriverViewSet(viewsets.ModelViewSet):
         try:
             driver = Driver.objects.get(pk=pk)
             driver.is_available = True
+            # self.send_to_kafka(driver)
+            broadcast_obj = {
+                "driver_id": driver.id,
+                "latitude": driver.latitude,
+                "longitude": driver.longitude
+            }
+            broadcast_obj_str = json.dumps(broadcast_obj)
+            self.send_to_websocket(broadcast_obj_str)
             driver.save()
             return Response({"message": "Driver activated successfully"}, status=status.HTTP_200_OK)
         except Driver.DoesNotExist:
@@ -245,6 +273,12 @@ class DriverViewSet(viewsets.ModelViewSet):
             driver = Driver.objects.get(pk=pk)
             driver.is_available = False
             driver.save()
+            broadcast_obj = {
+                "driver_id": driver.id,
+                "status": "not available"
+            }
+            broadcast_obj_str = json.dumps(broadcast_obj)
+            self.send_to_websocket(broadcast_obj_str)
             return Response({"message": "Driver de-activated successfully"}, status=status.HTTP_200_OK)
         except Driver.DoesNotExist:
             return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)

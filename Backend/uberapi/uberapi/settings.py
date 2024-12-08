@@ -36,6 +36,10 @@ INSTALLED_APPS = [
     'driver',
     'rides',
     'Billing',
+    'uberapi',
+    'channels',
+    'django_extensions',
+    'daphne',
     'corsheaders',
     'administrator',
     'rest_framework',
@@ -60,6 +64,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+ASGI_APPLICATION = 'uberapi.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 ROOT_URLCONF = 'uberapi.urls'
 
 TEMPLATES = [
@@ -83,7 +98,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
 }
 
@@ -150,7 +165,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Option 2: Allow specific origins (recommended)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001"
 ]
 
 from datetime import timedelta
@@ -159,3 +176,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+# Kafka Configuration
+KAFKA_BOOTSTRAP_SERVERS = ['localhost:9092']
+KAFKA_TOPIC_AVAILABLE_DRIVERS = 'available-drivers'
