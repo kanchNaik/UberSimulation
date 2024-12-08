@@ -16,11 +16,16 @@ import wav from "./uberwav.jpg";
 import assist from "./uberassist.jpg";
 import carSeat from "./ubercarseat.jpg";
 import applePay from "./applepay.jpg";
+import AddPaymentModal from "../../Payments/AddPaymentModal";
+import PaymentListModal from "../../Payments/PaymentListModal";
 
 const ChooseRide = ({ onClose }) => {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showPaymentOverlay, setShowPaymentOverlay] = useState(false); // State for Payment Overlay
-  const navigate = useNavigate();
+  const [showAddPayment, setShowAddPayment] = useState(false); // State for Add Payment Modal
+  const [showPaymentList, setShowPaymentList] = useState(false); // State for Payment List Modal
+  const [currentPaymentMethod, setCurrentPaymentMethod] = useState("Apple Pay • Personal"); // Default payment method
+
+
 
   const handleRequestClick = () => {
     setShowConfirm(true);
@@ -30,12 +35,28 @@ const ChooseRide = ({ onClose }) => {
     setShowConfirm(false);
   };
 
-  const handlePaymentClick = () => {
-    setShowPaymentOverlay(true); // Show the payment overlay
+
+  const handleAddPaymentClick = () => {
+    setShowAddPayment(true);
   };
 
-  const handleClosePaymentOverlay = () => {
-    setShowPaymentOverlay(false); // Close the payment overlay
+  const handlePaymentListClick = () => {
+    setShowPaymentList(true);
+  };
+
+  const handleCloseAddPayment = () => {
+    setShowAddPayment(false);
+  };
+
+  const handleClosePaymentList = () => {
+    setShowPaymentList(false);
+  };
+
+  const addPayment = (newPayment) => {
+    // Logic to add the new payment method
+    setCurrentPaymentMethod(newPayment);
+    console.log("New payment method added:", newPayment);
+    setShowAddPayment(false);
   };
 
   const rideOptions = [
@@ -181,24 +202,24 @@ const ChooseRide = ({ onClose }) => {
         <div className="ride-footer">
           <div className="payment-info" onClick={handlePaymentClick}>
             <img className="payment-logo" src={applePay} alt="Apple Pay" />
-            <p>Payment Method</p>
+            <p>{currentPaymentMethod}</p>
+            <button onClick={handlePaymentListClick}>Change Payment</button>
           </div>
           <button className="request-ride-button" onClick={handleRequestClick}>
             Request
           </button>
+          <button onClick={handleAddPaymentClick}>Add Payment Method</button>
         </div>
       </div>
 
       {/* Confirm Request Modal */}
       {showConfirm && <ConfirmRequest onClose={handleCloseConfirm} />}
+      {/* Add Payment Modal */}
+      {showAddPayment && <AddPaymentModal onClose={handleCloseAddPayment} addPayment={addPayment} />}
+       
+      {/* Payment List Modal */}
+      {showPaymentList && <PaymentListModal onClose={handleClosePaymentList} />}
 
-      {/* Add Payment Method Overlay */}
-      {showPaymentOverlay && (
-        <AddPaymentMethod
-          addPayment={() => console.log("Payment Method Added")}
-          onClose={handleClosePaymentOverlay}
-        />
-      )}
     </div>
   );
 };

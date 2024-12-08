@@ -1,67 +1,81 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback } from "react";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import "./MapStyles.css";
-import {
-  GoogleMap,
-  useJsApiLoader,
-  Marker,
-} from "@react-google-maps/api";
 
-// Map container dimensions
-const containerStyle = {
+const defaultCenter = {
+  lat: 37.7749,
+  lng: -122.4194, // San Francisco coordinates
+};
+
+const mapContainerStyle = {
   width: "100%",
-  height: "100%",
+  height: "600px",
 };
 
-// Center of the map (San Jose, CA in this case)
-const center = {
-  lat: 37.3352, // Latitude
-  lng: -121.8811, // Longitude
-};
-
-// Mock data for car locations
-const carLocations = [
-  { id: 1, lat: 37.337, lng: -121.884 },
-  { id: 2, lat: 37.334, lng: -121.877 },
-  { id: 3, lat: 37.336, lng: -121.889 },
-  { id: 4, lat: 37.332, lng: -121.882 },
-];
-
-const Map = () => {
-  // Load Google Maps API with your API key
-  const { isLoaded } = useJsApiLoader({
+const Map = ({ pickupLocation, dropoffLocation, driverLocations = [] }) => {
+  console.log("driverLocations: ", driverLocations)
+  const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyAxXTrRhMvi_D4YAxx-_cMj5C5AgVgVmFI", // Replace with your API key
   });
 
-  const mapRef = useRef(null);
+  const onLoad = useCallback(
+    (map) => {
+      if (pickupLocation?.lat && dropoffLocation?.lat) {
+        const bounds = new window.google.maps.LatLngBounds();
+        bounds.extend({ lat: pickupLocation.lat, lng: pickupLocation.lng });
+        bounds.extend({ lat: dropoffLocation.lat, lng: dropoffLocation.lng });
+        map.fitBounds(bounds);
+      }
+    },
+    [pickupLocation, dropoffLocation]
+  );
 
-  // Set up callbacks for map load and unmount
-  const onLoad = useCallback((map) => (mapRef.current = map), []);
-  const onUnmount = useCallback(() => (mapRef.current = null), []);
+  if (loadError) return <div>Error loading map</div>;
+  if (!isLoaded) return <div>Loading map...</div>;
 
-  return isLoaded ? (
+  return (
     <div className="map-container">
       <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={14}
+        mapContainerStyle={mapContainerStyle}
+        center={pickupLocation?.lat ? pickupLocation : defaultCenter}
+        zoom={13}
         onLoad={onLoad}
-        onUnmount={onUnmount}
       >
-        {/* Place car markers on the map */}
-        {carLocations.map((car) => (
+        {pickupLocation?.lat && (
           <Marker
-            key={car.id}
-            position={{ lat: car.lat, lng: car.lng }}
+            position={{ lat: pickupLocation.lat, lng: pickupLocation.lng }}
             icon={{
-              url: "https://img.icons8.com/ios-filled/50/000000/car--v1.png", // Car icon
-              scaledSize: new window.google.maps.Size(40, 40), // Icon size
+              url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+              scaledSize: new window.google.maps.Size(40, 40),
             }}
+            title="Pickup Location"
+          />
+        )}
+
+        {dropoffLocation?.lat && (
+          <Marker
+            position={{ lat: dropoffLocation.lat, lng: dropoffLocation.lng }}
+            icon={{
+              url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+              scaledSize: new window.google.maps.Size(40, 40),
+            }}
+            title="Dropoff Location"
+          />
+        )}
+
+        {driverLocations.map((driver) => (
+          <Marker
+            key={driver.id}
+            position={{ lat: driver.latitude, lng: driver.longitude }}
+            icon={{
+              url: "/car-icon.png",
+              scaledSize: new window.google.maps.Size(32, 32),
+            }}
+            title={`Driver ${driver.driver_id}`}
           />
         ))}
       </GoogleMap>
     </div>
-  ) : (
-    <p>Loading map...</p>
   );
 };
 
