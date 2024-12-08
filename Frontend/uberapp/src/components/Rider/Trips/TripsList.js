@@ -19,6 +19,9 @@ const TripsList = () => {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +45,20 @@ const TripsList = () => {
     } catch (error) {
       console.error('Error fetching trips:', error);
     }
+  };
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleFileUpload = () => {
+    if (!selectedFile) {
+      alert("Please select a file to upload.");
+      return;
+    }
+    alert(`File uploaded: ${selectedFile.name}`);
+    setUploadModalOpen(false);
+    setSelectedFile(null);
   };
 
   const handleTripSelect = (filter) => {
@@ -166,6 +183,40 @@ const TripsList = () => {
                 </div>
               </div>
             ))}
+
+               {/* Upload Button */}
+          <div className="upload-section text-center">
+            <button
+              className="upload-button btn btn-primary"
+              onClick={() => setUploadModalOpen(true)}
+            >
+              Upload File
+            </button>
+          </div>
+
+          {/* Upload Modal */}
+          <Modal isOpen={uploadModalOpen} onClose={() => setUploadModalOpen(false)}>
+            <div className="upload-modal-content">
+              <h3>Upload File</h3>
+              <input
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleFileChange}
+              />
+              {selectedFile && <p>Selected File: {selectedFile.name}</p>}
+              <div className="mt-3">
+                <button
+                  className="btn btn-secondary me-2"
+                  onClick={() => setUploadModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button className="btn btn-success" onClick={handleFileUpload}>
+                  Upload
+                </button>
+              </div>
+            </div>
+          </Modal>
           </section>
         </div>
 
@@ -189,3 +240,5 @@ const TripsList = () => {
 };
 
 export default TripsList;
+
+
