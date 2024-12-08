@@ -2,6 +2,7 @@ import React from "react";
 import GlobalStyles from "./styles/GlobalStyles";
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import store from './store';
+import { Provider } from 'react-redux';
 
 //All components import
 import Home from "./components/Home/Home";
@@ -29,12 +30,14 @@ import UberHome from "./components/Home/UberHome";
 import Signup from "./components/Auth/Signup/Signup";
 import RideStatus from "./components/Rider/RideStatus/RideStatus";
 import DriverHome from "./components/Home/DriverHome";
+import KafkaConsumer from "./components/WebSocket/KafkaConsumer";
+import RideForm from "./components/Common/Ride/RideForm";
 import DriverSidebar from "./components/DriverDashboard/DriverSidebar";
 window.store = store;
 
 function App() {
   return (
-    <>
+    <Provider store={store}>
       <GlobalStyles />
       <div className="App">
         <div className="main-content">
@@ -78,10 +81,21 @@ function App() {
           <Route path="/uberhome" element={<UberHome />} />
           <Route path="*" element={<h1>404 Not Found</h1>}/>
 
+          {/* Ride Routes */}
+          <Route path="/ride" element={<RideForm />} />
+
+          {/* Add Payment Method Route */}
+          <Route path="/add-payment-method" element={<AddPaymentMethod />} />
+          {/* List Payment Methods Route */}
+          <Route path="/payment-methods" element={<PaymentList />} />
+
+          
+          {/* WebSocket Route */}
+          <Route path="/available-drivers" element={<KafkaConsumer />} />
         </Routes>
         </div>
       </div>
-    </>
+    </Provider>
   );
 }
 
