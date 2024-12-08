@@ -1,4 +1,4 @@
-
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./ConfirmRequest.css";
 import uberX from "../ChooseRide/uberx.jpg";
@@ -7,14 +7,14 @@ const ConfirmRequest = ({ onClose }) => {
   const navigate = useNavigate();
 
   const handleConfirm = () => {
-      navigate("/customer/ridestatus"); // Navigate to the next page
+    navigate("/customer/ridestatus"); // Navigate to the ride status page
   };
 
   return (
     <div className="confirm-request-wrapper">
       {/* Overlay */}
       <div className="confirm-request-overlay" onClick={onClose}></div>
-      
+
       {/* Modal */}
       <div className="confirm-request-modal">
         {/* Fare Update Message */}
@@ -46,7 +46,6 @@ const ConfirmRequest = ({ onClose }) => {
           </button>
         </div>
       </div>
-
     </div>
   );
 };

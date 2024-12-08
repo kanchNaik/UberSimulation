@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import "./ChooseRide.css"; // Add styling specific to ChooseRide
+import { useNavigate } from "react-router-dom";
+import "./ChooseRide.css";
 import ConfirmRequest from "../ConfirmRequest/ConfirmRequest";
+import AddPaymentMethod from "../../Payments/AddPaymentMethod"; // Import AddPaymentMethod
 import uberX from "./uberx.jpg";
 import uberXL from "./uberxl.jpg";
 import comfort from "./ubercomfort.jpg";
@@ -17,6 +19,8 @@ import applePay from "./applepay.jpg";
 
 const ChooseRide = ({ onClose }) => {
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showPaymentOverlay, setShowPaymentOverlay] = useState(false); // State for Payment Overlay
+  const navigate = useNavigate();
 
   const handleRequestClick = () => {
     setShowConfirm(true);
@@ -24,6 +28,14 @@ const ChooseRide = ({ onClose }) => {
 
   const handleCloseConfirm = () => {
     setShowConfirm(false);
+  };
+
+  const handlePaymentClick = () => {
+    setShowPaymentOverlay(true); // Show the payment overlay
+  };
+
+  const handleClosePaymentOverlay = () => {
+    setShowPaymentOverlay(false); // Close the payment overlay
   };
 
   const rideOptions = [
@@ -167,9 +179,9 @@ const ChooseRide = ({ onClose }) => {
 
         {/* Footer */}
         <div className="ride-footer">
-          <div className="payment-info">
+          <div className="payment-info" onClick={handlePaymentClick}>
             <img className="payment-logo" src={applePay} alt="Apple Pay" />
-            <p>Apple Pay • Personal</p>
+            <p>Payment Method</p>
           </div>
           <button className="request-ride-button" onClick={handleRequestClick}>
             Request
@@ -179,6 +191,14 @@ const ChooseRide = ({ onClose }) => {
 
       {/* Confirm Request Modal */}
       {showConfirm && <ConfirmRequest onClose={handleCloseConfirm} />}
+
+      {/* Add Payment Method Overlay */}
+      {showPaymentOverlay && (
+        <AddPaymentMethod
+          addPayment={() => console.log("Payment Method Added")}
+          onClose={handleClosePaymentOverlay}
+        />
+      )}
     </div>
   );
 };
