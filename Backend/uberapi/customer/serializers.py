@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from customer.models import Customer
+from customer.models import Customer, PaymentMethod
 from accounts.models import User
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -133,3 +133,14 @@ class CreateCustomerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Customer.objects.create(**validated_data)
+
+class PaymentMethodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentMethod
+        fields = ['id', 'card_number', 'card_holder_name', 'expiration_date', 
+                 'card_type', 'is_default', 'created_at']
+        read_only_fields = ['created_at']
+
+    def validate_card_number(self, value):
+        # Remove any spaces or dashes for consistent format
+        return value.replace(' ', '').replace('-', '')

@@ -51,3 +51,24 @@ class Customer(models.Model):
 
 #     def __str__(self):
 #         return f"Review by {self.customer.first_name} {self.customer.last_name} - Rating: {self.rating}"
+
+class PaymentMethod(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='payment_methods')
+    card_number = models.CharField(max_length=19)  # Format: XXXX-XXXX-XXXX-XXXX
+    card_holder_name = models.CharField(max_length=100)
+    expiration_date = models.CharField(max_length=5)  # Format: MM/YY
+    card_type = models.CharField(max_length=20)  # e.g., Visa, MasterCard, etc.
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.card_type} **** {self.card_number[-4:]} - {self.customer.first_name}"
+    
+    def save(self, *args, **kwargs):
+        # If this is marked as default, remove default status from other cards
+        if self.is_default:
+            PaymentMethod.objects.filter(customer=self.customer, is_default=True).update(is_default=False)
+        super().save(*args, **kwargs)
+
+
+
