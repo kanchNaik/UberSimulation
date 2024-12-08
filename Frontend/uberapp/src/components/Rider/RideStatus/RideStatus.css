@@ -194,3 +194,40 @@
   text-align: center;
   z-index: 1050;
 }
+
+.review-section {
+  margin-top: 20px;
+}
+
+.review-title {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.review-textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-review-button {
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-review-button:hover {
+  background-color: #218838;
+}
+
+.review-thank-you {
+  margin-top: 10px;
+  font-size: 1em;
+  color: #555;
+}

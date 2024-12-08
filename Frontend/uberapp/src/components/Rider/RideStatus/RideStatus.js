@@ -8,9 +8,23 @@ import { faLocationDot, faMapPin, faStar } from "@fortawesome/free-solid-svg-ico
 const RideStatus = ({ isDriver = false }) => {
   const [showStatus, setShowStatus] = useState(true);
   const [rating, setRating] = useState(0); // State for selected rating
+  const [review, setReview] = useState(""); // State for review text
+  const [isReviewSubmitted, setIsReviewSubmitted] = useState(false); // State for submission status
 
   const handleRating = (value) => {
     setRating(value); // Update the selected rating
+  };
+
+  const handleReviewChange = (e) => {
+    setReview(e.target.value); // Update review text
+  };
+
+  const handleReviewSubmit = () => {
+    if (review.trim() !== "") {
+      setIsReviewSubmitted(true); // Mark review as submitted
+    } else {
+      alert("Please enter a review before submitting.");
+    }
   };
 
   useEffect(() => {
@@ -56,14 +70,15 @@ const RideStatus = ({ isDriver = false }) => {
 
           {/* Navigate and Cancel Buttons */}
           <div className="navigate-section">
-          <button className="cancel-button">Cancel Ride</button>
+            <button className="cancel-button">Cancel Ride</button>
             <button className="navigate-button">Navigate</button>
-          
           </div>
 
           {/* Driver Info */}
           <div className="driver-info-section">
-            <b><h3 className="driver-info-title">Driver</h3></b>
+            <b>
+              <h3 className="driver-info-title">Driver</h3>
+            </b>
             <div className="driver-info">
               <img
                 src="https://via.placeholder.com/50"
@@ -95,6 +110,29 @@ const RideStatus = ({ isDriver = false }) => {
               ))}
             </div>
             <p className="tip-message">After rating, you can add a tip</p>
+          </div>
+
+          {/* Review Section */}
+          <div className="review-section">
+            {!isReviewSubmitted ? (
+              <>
+                <h3 className="review-title">Leave a Review</h3>
+                <textarea
+                  className="review-textarea"
+                  placeholder="Write your review here..."
+                  value={review}
+                  onChange={handleReviewChange}
+                />
+                <button className="submit-review-button" onClick={handleReviewSubmit}>
+                  Submit Review
+                </button>
+              </>
+            ) : (
+              <div className="review-thank-you">
+                <p>Thank you for your review!</p>
+                <p>Your feedback: {review}</p>
+              </div>
+            )}
           </div>
         </div>
 
