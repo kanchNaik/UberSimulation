@@ -29,6 +29,7 @@ import UberHome from "./components/Home/UberHome";
 import Signup from "./components/Auth/Signup/Signup";
 import RideStatus from "./components/Rider/RideStatus/RideStatus";
 import DriverHome from "./components/Home/DriverHome";
+import DriverSidebar from "./components/DriverDashboard/DriverSidebar";
 window.store = store;
 
 function App() {
@@ -44,7 +45,7 @@ function App() {
           {/* Auth Routes  */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/logout" element={<Navigate to="/uberhome" replace />} />
+          {/* <Route path="/logout" element={<Navigate to="/uberhome" replace />} /> */}
           {/* Customer Routes */} 
           <Route path="/customer/home" element={<Home />} />
           <Route path="/customer/signup" element={<CustomerSignup />} />
@@ -70,6 +71,7 @@ function App() {
           {/* Driver Routes */}
           <Route path="/driver" element={<Driver/>} />
           <Route path="/driver/home" element={<DriverHome />} />
+          <Route path="/driversidebar" element={<DriverSidebar />} />
           <Route path="/driver/dashboard" element={<DriverDashboard />} />
           <Route path="/driver/signup" element={<DriverSignup />} />
           <Route path="/driver/manageaccount/:id" element={<DriverProfile />} />

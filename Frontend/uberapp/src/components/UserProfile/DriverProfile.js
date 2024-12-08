@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import { BASE_API_URL } from '../../Setupconstants';
 import { messageService } from '../Common/Message/MessageService';
 import { useParams, useNavigate } from 'react-router-dom';
-
+import './UserProfile.css';
 const DriverProfile = () => {
   const [profile, setProfile] = useState({
     username: '',
@@ -172,10 +172,11 @@ const DriverProfile = () => {
 
   return (
     <Container className="mt-5">
-      <h2 className="text-center">Driver Profile</h2>
+
       <Row className="justify-content-center">
         <Col md={8}>
           <Card className="p-4">
+          <h2 className="text-center">Driver Profile</h2>
             <div className="text-center">
               <div className="position-relative d-inline-block">
                 <img src={profile.profile_image || 'https://via.placeholder.com/150'} alt="Profile" className="rounded-circle" width="150" height="150" />

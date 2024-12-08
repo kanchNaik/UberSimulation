@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import { BASE_API_URL } from '../../Setupconstants';
 import { messageService } from '../Common/Message/MessageService';
 import { useParams, useNavigate } from 'react-router-dom';
-
+import './CustomerProfile.css';
 const CustomerProfile = () => {
   const [profile, setProfile] = useState({
     username: '',
