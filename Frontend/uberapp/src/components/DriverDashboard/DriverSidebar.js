@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./Sidebar.css"; // Updated styling for Sidebar
-import { FaBars, FaUser, FaCar, FaReceipt, FaCog, FaSignOutAlt } from "react-icons/fa";
+import "./DriverSidebar.css"; // Updated styling for Sidebar
+import { FaBars, FaUser, FaCar, FaReceipt, FaCog, FaSignOutAlt, FaHouseUser, FaHouzz, FaLaptopHouse } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { Link } from "react-router-dom";
 
@@ -25,36 +25,33 @@ const Sidebar = () => {
         </button>
 
         <div className="sidebar-header">
-          <h2>Uber Admin</h2>
+          <h2>Welcome, Driver</h2>
         </div>
 
         <div className="sidebar-options">
           <ul>
-            <li>
-              <Link to="/admin/dashboard">
-                <MdDashboard className="icon" /> Dashboard
+          <li>
+              <Link to="/driver">
+                <FaLaptopHouse className="icon" /> Home
               </Link>
             </li>
             <li>
-              <Link to="/admin/usersinfo">
-                <FaUser className="icon" /> Users
+              <Link to="/driver/manageaccount/:id">
+                <MdDashboard className="icon" /> Profile
               </Link>
             </li>
             <li>
-              <Link to="/admin/driversinfo">
-                <FaCar className="icon" /> Drivers
+              <Link to="/driver/dashboard">
+                <FaUser className="icon" /> Dashboard
               </Link>
             </li>
+
             <li>
-              <Link to="/admin/ridesinfo">
-                <FaReceipt className="icon" /> Rides
+              <Link to="/driver/home">
+                <FaCar className="icon" /> Accept Rides
               </Link>
             </li>
-            <li>
-              <Link to="/admin/billsinfo">
-                <FaReceipt className="icon" /> Bills
-              </Link>
-            </li>
+           
           </ul>
         </div>
         <div className="sidebar-footer">

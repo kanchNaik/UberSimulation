@@ -12,6 +12,9 @@ from rest_framework.permissions import AllowAny
 from datetime import datetime
 from django.db.models import Q
 from accounts.models import User
+from haversine import haversine
+from driver.models import Driver
+from .PricePredictionSystem import PricePrediction
 
 class RideViewSet(viewsets.ModelViewSet):
     """
@@ -179,6 +182,123 @@ class RideViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+    def calculate_distance(self, lat1, lon1, lat2, lon2):
+            """Calculate distance between two points"""
+            return haversine((lat1, lon1), (lat2, lon2))
+
+    def get_drivers_in_radius(self, customer_location, radius, customer_vehicle_type):
+            """Calculate distance between customer and each driver"""
+            try:
+                customer_lat = float(customer_location['lat'])
+                customer_lng = float(customer_location['lng'])
+                drivers = Driver.objects.filter(is_available=True)
+                drivers_in_radius = []
+                for driver in drivers:
+                    distance = self.calculate_distance(customer_lat, customer_lng, driver.latitude, driver.longitude)
+                    if distance <= radius:
+                        drivers_in_radius.append(driver)
+                return drivers_in_radius
+            except Exception as e:
+                print(f"Error getting drivers: {str(e)}")
+                return []
+
+
+
+    def assign_driver(self, drivers):
+            # Assign one driver to the customer
+            driver = drivers[0]
+            return driver
+        
+    def create_ride(self, customer, customer_location, customer_destination, customer_vehicle_type, driver):
+            # Create a ride for the customer
+            ride = Ride.objects.create(customer=customer, driver=driver, location=customer_location, destination=customer_destination, vehicle_type=customer_vehicle_type)
+            return ride
+
+
+    def calculate_fare(self, customer_location, customer_destination, customer_vehicle_type, vehicle_type):
+        distance = self.calculate_distance(customer_location, customer_destination)
+        supply = self.get_drivers_in_radius(customer_location, 10, customer_vehicle_type)
+        demand = 1
+        time = datetime.now()
+        passenger_count = 1
+
+        price_prediction = PricePrediction(demand, supply, passenger_count, time, distance)
+        price = price_prediction.get_ride_price()
+
+        if vehicle_type == "sedan":
+            price *= 1.1
+        elif vehicle_type == "suv":
+            price *= 1.2
+        elif vehicle_type == "van":
+            price *= 1.3
+        elif vehicle_type == "bike":
+            price *= 0.9
+        elif vehicle_type == "motorcycle":
+            price *= 0.8
+
+        return price
+
+    @action(detail=False, methods=["get"], url_path="estimated-price")
+    def estimated_price(self, request):
+        """Estimate the price of a ride."""
+
+        customer_location = request.data.get("location")
+        customer_destination = request.data.get("destination")
+        customer_vehicle_type = request.data.get("vehicle_type")
+
+        price = self.calculate_fare(customer_location, customer_destination, customer_vehicle_type, customer_vehicle_type)
+
+
+        return Response({"price": price}, status=status.HTTP_200_OK)
+
+    # Add a view to request ride by customer. Once it is requested pull drivers in 10km radiuus from kafka  and assign one to customer.
+    @action(detail=False, methods=["post"], url_path="request-ride")
+    def request_ride(self, request):
+        """Request a ride for a customer."""
+        try:
+            customer_location = request.data.get("location")
+            customer_destination = request.data.get("destination")
+            customer_vehicle_type = request.data.get("vehicle_type")
+            customer = Customer.objects.get(id=request.data.get("customer_id"))
+
+            if not all([customer_location, customer_destination, customer_vehicle_type]):
+                return Response(
+                    {"error": "Missing required fields"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Get nearby drivers
+            nearby_drivers = self.get_drivers_in_radius(customer_location, 10, customer_vehicle_type)
+            
+            if not nearby_drivers:
+                return Response(
+                    {"error": "No drivers available"}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Assign driver and create ride
+            driver = self.assign_driver(nearby_drivers, customer_vehicle_type)
+            ride = self.create_ride(
+                customer,
+                customer_location,
+                customer_destination,
+                customer_vehicle_type,
+                driver
+            )
+
+            return Response({
+                "message": "Ride requested successfully",
+                "ride": ride.id,
+                "driver": driver,
+                "price": ride.fare
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 class RideEventImageViewSet(viewsets.ModelViewSet):
     queryset = RideEventImage.objects.all()
     serializer_class = RideEventImageSerializer
@@ -258,5 +378,3 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(reviews, many=True)
         return Response(serializer.data)
 
-
-    
