@@ -1,11 +1,11 @@
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-from customer.models import Customer
+from customer.models import Customer, PaymentMethod
 from driver.models import Driver
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from geopy.distance import geodesic
-from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer, CustomerLocationSerializer
+from customer.serializers import CustomerRegistrationSerializer, CustomerListSerializer, CustomerSerializer, CustomerLocationSerializer, PaymentMethodSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
@@ -167,3 +167,51 @@ class CustomerViewSet(viewsets.ModelViewSet):
         # Serialize the queryset
         serialized_customers = CustomerSerializer(queryset, many=True)
         return Response(serialized_customers.data)
+
+    @action(detail=True, methods=['GET'], url_path='payment-methods')
+    def payment_methods(self, request, pk=None):
+        """Get all payment methods for a customer"""
+        customer = self.get_object()
+        payment_methods = customer.payment_methods.all()
+        serializer = PaymentMethodSerializer(payment_methods, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['POST'], url_path='payment-methods')
+    def add_payment_method(self, request, pk=None):
+        """Add a new payment method for a customer"""
+        customer = self.get_object()
+        serializer = PaymentMethodSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(customer=customer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['DELETE'], url_path='payment-methods/(?P<payment_id>[^/.]+)')
+    def delete_payment_method(self, request, pk=None, payment_id=None):
+        """Delete a specific payment method"""
+        customer = self.get_object()
+        try:
+            payment_method = customer.payment_methods.get(id=payment_id)
+            payment_method.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except PaymentMethod.DoesNotExist:
+            return Response(
+                {"error": "Payment method not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=True, methods=['PATCH'], url_path='payment-methods/(?P<payment_id>[^/.]+)/set-default')
+    def set_default_payment_method(self, request, pk=None, payment_id=None):
+        """Set a payment method as default"""
+        customer = self.get_object()
+        try:
+            payment_method = customer.payment_methods.get(id=payment_id)
+            payment_method.is_default = True
+            payment_method.save()
+            return Response(PaymentMethodSerializer(payment_method).data)
+        except PaymentMethod.DoesNotExist:
+            return Response(
+                {"error": "Payment method not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
