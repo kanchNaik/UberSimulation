@@ -30,6 +30,7 @@ import Signup from "./components/Auth/Signup/Signup";
 import RideStatus from "./components/Rider/RideStatus/RideStatus";
 import DriverHome from "./components/Home/DriverHome";
 import DriverSidebar from "./components/DriverDashboard/DriverSidebar";
+import PaymentHistory from "./components/Rider/Billing/PaymentHistory";
 window.store = store;
 
 function App() {
@@ -55,7 +56,7 @@ function App() {
           <Route path="/customer/payments" element={<PaymentList />} />
           <Route path="/customer/payments/add" element={<AddPaymentMethod />} />
           <Route path="/customer/ridestatus" element={<RideStatus />} />
-
+          <Route path="/customer/paymenthistory" element={<PaymentHistory />} />
           {/* Admin Routes */}
           <Route path="/admin/home" element={<AdminHome />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />

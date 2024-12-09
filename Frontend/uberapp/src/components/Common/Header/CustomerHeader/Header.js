@@ -60,7 +60,15 @@ const Header = () => {
           <div className="dropdown-menu">
             <div className="dropdown-item">Wallet</div>
             <div className="dropdown-item">Promos</div>
-            <div className="dropdown-item">Support</div>
+            <div>
+            <NavLink
+            to={`/customer/paymenthistory/`}
+            className="dropdown-item"
+            role="menuitem"
+            aria-label="Payment history link"
+          >
+            Payment History
+          </NavLink></div>
             <div>
             <NavLink
             to={`/customer/manageaccount/${user_id}`}
