@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uber-backend
+  labels:
+    app: uber-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: uber-backend
+  template:
+    metadata:
+      labels:
+        app: uber-backend
+    spec:
+      containers:
+      - name: uber-backend
+        image: uber-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "sqlite:///db.sqlite3"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-service:9092"
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"

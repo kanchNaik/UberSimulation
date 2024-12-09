@@ -111,12 +111,12 @@ class DriverViewSet(viewsets.ModelViewSet):
         driver.delete()
         return Response({"message": "Driver deleted successfully!"}, status=status.HTTP_200_OK)
 
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
-                            value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+    # producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+    #                         value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
-    def send_to_kafka(self, message_object):
-        self.producer.send('available-drivers', message_object)
-        return Response({"status": "Driver added to Kafka"})
+    # def send_to_kafka(self, message_object):
+    #     self.producer.send('available-drivers', message_object)
+        # return Response({"status": "Driver added to Kafka"})
     
     def send_to_websocket(self, message_object):
         async_to_sync(self.channel_layer.group_send)("group_available-drivers", {

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uber-frontend
+  labels:
+    app: uber-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: uber-frontend
+  template:
+    metadata:
+      labels:
+        app: uber-frontend
+    spec:
+      containers:
+      - name: uber-frontend
+        image: uber-frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REACT_APP_API_URL
+          value: "http://uber-backend-service:8000"
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
