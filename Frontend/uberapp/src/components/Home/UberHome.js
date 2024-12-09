@@ -29,8 +29,13 @@ function UberHome() {
           gap: "20px",
         }}
       >
+        
         <RideForm onSearch={handleSearchClick} />
-        <Map />
+      
+        <div className="card map-card">
+          <Map />
+        </div>
+     
       </div>
 
       {/* Render ChooseRide modal if showChooseRide is true */}

@@ -46,7 +46,7 @@
   
   .map-container img {
     width: 100%;
-    max-width: 600px;
+    max-width: 1000px;
     height: auto;
   }
   
@@ -71,4 +71,26 @@
     padding: 10px 20px;
     text-align: center;
   }
+
+  .map-card {
+    flex: 0.65; /* Allocate 65% of the space */
+    height: 100vh; /* Match viewport height */
+    background-color: #e9ecef;
+    overflow: hidden; /* Prevent scrollbars */
+    position: relative;
+  }
   
+
+
+  .details-card {
+    flex: 0.35; /* Allocate 35% of the space */
+    height: 100vh; /* Match viewport height */
+    background-color: white;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent scrollbars */
+  }
