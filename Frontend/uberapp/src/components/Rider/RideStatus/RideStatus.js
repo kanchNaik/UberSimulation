@@ -1,60 +1,83 @@
 import React, { useState, useEffect } from "react";
 import "./RideStatus.css";
 import Map from "../../Common/Map/Map";
-import Header from "../../Common/Header/CustomerHeader/Header"; // Import the CustomerHeader
+import Header from "../../Common/Header/CustomerHeader/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faMapPin, faStar } from "@fortawesome/free-solid-svg-icons";
+import { BASE_API_URL } from "../../../Setupconstants";
 
 const RideStatus = ({ isDriver = false }) => {
   const [showStatus, setShowStatus] = useState(true);
-  const [rating, setRating] = useState(0); // State for selected rating
-  const [review, setReview] = useState(""); // State for review text
-  const [isReviewSubmitted, setIsReviewSubmitted] = useState(false); // State for submission status
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [isReviewSubmitted, setIsReviewSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const handleRating = (value) => {
-    setRating(value); // Update the selected rating
+    setRating(value);
   };
 
   const handleReviewChange = (e) => {
-    setReview(e.target.value); // Update review text
+    setReview(e.target.value);
   };
 
-  const handleReviewSubmit = () => {
-    if (review.trim() !== "") {
-      setIsReviewSubmitted(true); // Mark review as submitted
-    } else {
+  const handleReviewSubmit = async () => {
+    if (review.trim() === "") {
       alert("Please enter a review before submitting.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_API_URL}/api/rides/reviews/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any necessary authentication headers here
+        },
+        body: JSON.stringify({
+          review_text: review,
+          rating: rating,
+          // Add ride_id or driver_id as needed
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Review submitted successfully:', result);
+      setIsReviewSubmitted(true);
+      setSubmitError(null);
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      setSubmitError("Failed to submit review. Please try again.");
     }
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowStatus(false); // Hide the confirmation message after 3 seconds
+      setShowStatus(false);
     }, 3000);
-    return () => clearTimeout(timer); // Cleanup timer on component unmount
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className="ride-status-container">
-      {/* Header */}
       <Header />
 
-      {/* Green Confirmation Message */}
       {showStatus && (
         <div className="confirmation-status">
           <p>Your ride is confirmed and on its way!</p>
         </div>
       )}
 
-      {/* Main Content */}
       <div className="ride-status-content">
-        {/* Left Card (Details) */}
         <div className="card details-card">
           <div className="ride-status-title">
             {isDriver ? "Juan is on trip" : "Francisco Hernandez is on the way"}
           </div>
 
-          {/* Location Details */}
           <div className="location-details">
             <div className="location-item">
               <FontAwesomeIcon icon={faMapPin} className="location-icon" />
@@ -68,13 +91,11 @@ const RideStatus = ({ isDriver = false }) => {
             {!isDriver && <p className="destination">1839 Grant Ave</p>}
           </div>
 
-          {/* Navigate and Cancel Buttons */}
           <div className="navigate-section">
             <button className="cancel-button">Cancel Ride</button>
             <button className="navigate-button">Navigate</button>
           </div>
 
-          {/* Driver Info */}
           <div className="driver-info-section">
             <b>
               <h3 className="driver-info-title">Driver</h3>
@@ -95,7 +116,6 @@ const RideStatus = ({ isDriver = false }) => {
             </div>
           </div>
 
-          {/* Driver Rating Section */}
           <div className="rating-section">
             <h3 className="rating-title">How was your trip with Francisco?</h3>
             <p className="rating-subtitle">Tuesday morning to 1839 Grant Ave</p>
@@ -112,7 +132,6 @@ const RideStatus = ({ isDriver = false }) => {
             <p className="tip-message">After rating, you can add a tip</p>
           </div>
 
-          {/* Review Section */}
           <div className="review-section">
             {!isReviewSubmitted ? (
               <>
@@ -126,6 +145,7 @@ const RideStatus = ({ isDriver = false }) => {
                 <button className="submit-review-button" onClick={handleReviewSubmit}>
                   Submit Review
                 </button>
+                {submitError && <p className="error-message">{submitError}</p>}
               </>
             ) : (
               <div className="review-thank-you">
@@ -136,7 +156,6 @@ const RideStatus = ({ isDriver = false }) => {
           </div>
         </div>
 
-        {/* Right Card (Map) */}
         <div className="card map-card">
           <Map />
         </div>
