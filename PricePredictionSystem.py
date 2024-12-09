@@ -3,27 +3,20 @@ class PricePrediction:
     rate_per_minute = 0.5
     max_surge_multiplier = 2.5
 
-    def __init__(self, demand, supply, passenger_count, time, distance):
-        self.demand = demand
-        self.supply = supply
-        self.passenger_count = passenger_count
-        self.time = time
-        self.distance = distance
-
-    def base_price(self):
-        price = self.rate_per_mile * self.distance
+    @classmethod
+    def base_price(cls, distance):
+        price = cls.rate_per_mile * distance
         return max(price, 3.0)
 
-    def supply_surge_factor(self):
-        if self.supply == 0:  # Prevent division by zero
-            return self.max_surge_multiplier  # Max surge multiplier
-        demand_supply_ratio = self.demand / self.supply
-        return min(demand_supply_ratio, self.max_surge_multiplier)
+    @classmethod
+    def supply_surge_factor(cls, demand, supply):
+        if supply == 0:  # Prevent division by zero
+            return cls.max_surge_multiplier  # Max surge multiplier
+        demand_supply_ratio = demand / supply
+        return min(demand_supply_ratio, cls.max_surge_multiplier)
 
-    def hourly_surge_factor(self):
-        hour = self.time.hour
-        day_of_week = self.time.weekday()
-
+    @classmethod
+    def hourly_surge_factor(cls, hour=2, day_of_week=5):
         time_factor = 1.0
         if 7 <= hour < 10 or 16 <= hour < 19:  # Rush hours
             time_factor = 1.5
@@ -35,24 +28,25 @@ class PricePrediction:
 
         return time_factor
 
-    def predict_ride_price(self):
+    @classmethod
+    def predict_ride_price(cls):
         # TODO Add your prediction logic here, from Jupyter Notebook
         return 0
 
-    def get_ride_price(self):
-        base_price = self.base_price()
-        surge_price = base_price * self.supply_surge_factor() * self.hourly_surge_factor()
-        predicted_price = self.predict_ride_price()
+    @classmethod
+    def get_ride_price(cls, demand, supply, passenger_count, distance):
+        base_price = cls.base_price(distance)
+        surge_price = base_price * cls.supply_surge_factor(demand, supply) * cls.hourly_surge_factor()
+        predicted_price = cls.predict_ride_price()
         if predicted_price/surge_price > 1.5:
-            return surge_price*1.5
+            return surge_price * 1.5
         else:
             return max(predicted_price, surge_price)
 
-    def log_ride_price(self):
-        print(f"Base price: ${self.base_price():.2f}")
-        print(f"Supply surge factor: {self.supply_surge_factor():.2f}")
-        print(f"Hourly surge factor: {self.hourly_surge_factor():.2f}")
-        print(f"Predicted price: ${self.predict_ride_price():.2f}")
-        print(f"Ride price: ${self.get_ride_price():.2f}")
-
-
+    @classmethod
+    def log_ride_price(cls, demand, supply, passenger_count, distance):
+        print(f"Base price: ${cls.base_price(distance):.2f}")
+        print(f"Supply surge factor: {cls.supply_surge_factor(demand, supply):.2f}")
+        print(f"Hourly surge factor: {cls.hourly_surge_factor():.2f}")
+        print(f"Predicted price: ${cls.predict_ride_price():.2f}")
+        print(f"Ride price: ${cls.get_ride_price(demand, supply, passenger_count, distance):.2f}")

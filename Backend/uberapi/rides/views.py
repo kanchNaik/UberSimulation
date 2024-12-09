@@ -187,20 +187,17 @@ class RideViewSet(viewsets.ModelViewSet):
             return haversine((lat1, lon1), (lat2, lon2))
 
     def get_drivers_in_radius(self, customer_location, radius, customer_vehicle_type):
-            """Calculate distance between customer and each driver"""
-            try:
-                customer_lat = float(customer_location['lat'])
-                customer_lng = float(customer_location['lng'])
-                drivers = Driver.objects.filter(is_available=True)
-                drivers_in_radius = []
-                for driver in drivers:
-                    distance = self.calculate_distance(customer_lat, customer_lng, driver.latitude, driver.longitude)
-                    if distance <= radius:
-                        drivers_in_radius.append(driver)
-                return drivers_in_radius
-            except Exception as e:
-                print(f"Error getting drivers: {str(e)}")
-                return []
+        #try:
+            customer_lat = float(customer_location['lat'])
+            customer_lng = float(customer_location['lng'])
+            drivers = Driver.objects.filter(is_available=True)
+            return [
+                driver for driver in drivers
+                if self.calculate_distance(customer_lat, customer_lng, driver.latitude, driver.longitude) <= radius
+            ]
+        # except Exception as e:
+        #     print(f"Error getting drivers: {str(e)}")
+        #     return []
 
 
 
@@ -216,40 +213,107 @@ class RideViewSet(viewsets.ModelViewSet):
 
 
     def calculate_fare(self, customer_location, customer_destination, customer_vehicle_type, vehicle_type):
-        distance = self.calculate_distance(customer_location, customer_destination)
+        distance = self.calculate_distance(
+            float(customer_location['lat']),
+            float(customer_location['lng']),
+            float(customer_destination['lat']),
+            float(customer_destination['lng'])
+        )
         supply = self.get_drivers_in_radius(customer_location, 10, customer_vehicle_type)
         demand = 1
         time = datetime.now()
         passenger_count = 1
 
-        price_prediction = PricePrediction(demand, supply, passenger_count, time, distance)
-        price = price_prediction.get_ride_price()
+        #price_prediction = PricePrediction(demand, len(supply), passenger_count, distance)
+        price = self.get_ride_price(demand, len(supply), passenger_count, distance)
 
-        if vehicle_type == "sedan":
-            price *= 1.1
-        elif vehicle_type == "suv":
-            price *= 1.2
-        elif vehicle_type == "van":
-            price *= 1.3
-        elif vehicle_type == "bike":
-            price *= 0.9
-        elif vehicle_type == "motorcycle":
-            price *= 0.8
+        vehicle_type_multipliers = {
+            "sedan": 1.1,
+            "suv": 1.2,
+            "van": 1.3,
+            "bike": 0.9,
+            "motorcycle": 0.8
+        }
+        price *= vehicle_type_multipliers.get(vehicle_type.lower(), 1.05)
+
 
         return price
+    
+    # rate_per_mile = 2.5
+    # rate_per_minute = 0.5
+    # max_surge_multiplier = 2.5
 
-    @action(detail=False, methods=["get"], url_path="estimated-price")
+    def base_price(self, distance):
+            rate_per_mile = 2.5
+            price = rate_per_mile * distance
+            return price
+
+    def supply_surge_factor(self, demand, supply):
+            max_surge_multiplier = 2.5
+            if supply == 0:  # Prevent division by zero
+                return max_surge_multiplier  # Max surge multiplier
+            demand_supply_ratio = demand / supply
+            return min(demand_supply_ratio, max_surge_multiplier)
+
+    def hourly_surge_factor(self, hour=2, day_of_week=5):
+            time_factor = 1.0
+            if 7 <= hour < 10 or 16 <= hour < 19:  # Rush hours
+                time_factor = 1.5
+            elif 22 <= hour or hour < 6:  # Late night
+                time_factor = 1.2
+
+            if day_of_week >= 5:  # Weekend
+                time_factor *= 1.1
+
+            return time_factor
+
+    def predict_ride_price(self):
+            # TODO Add your prediction logic here, from Jupyter Notebook
+            return 0
+
+    def get_ride_price(self, demand, supply, passenger_count, distance):
+            base_price = self.base_price(distance)
+            surge_price = base_price * self.supply_surge_factor(demand, supply) * self.hourly_surge_factor()
+            predicted_price = self.predict_ride_price()
+            if predicted_price/surge_price > 1.5:
+                return surge_price * 1.5
+            else:
+                return max(predicted_price, surge_price)
+
+    def log_ride_price(cls, demand, supply, passenger_count, distance):
+            print(f"Base price: ${cls.base_price(distance):.2f}")
+            print(f"Supply surge factor: {cls.supply_surge_factor(demand, supply):.2f}")
+            print(f"Hourly surge factor: {cls.hourly_surge_factor():.2f}")
+            print(f"Predicted price: ${cls.predict_ride_price():.2f}")
+            print(f"Ride price: ${cls.get_ride_price(demand, supply, passenger_count, distance):.2f}")
+
+    @action(detail=False, methods=["post"], url_path="estimated-price")
     def estimated_price(self, request):
         """Estimate the price of a ride."""
-
         customer_location = request.data.get("location")
         customer_destination = request.data.get("destination")
         customer_vehicle_type = request.data.get("vehicle_type")
 
-        price = self.calculate_fare(customer_location, customer_destination, customer_vehicle_type, customer_vehicle_type)
+        if not all([customer_location, customer_destination, customer_vehicle_type]):
+            return Response({"error": "Missing required parameters"}, status=status.HTTP_400_BAD_REQUEST)
 
+        if not all(key in customer_location for key in ['lat', 'lng']) or \
+        not all(key in customer_destination for key in ['lat', 'lng']):
+            return Response({"error": "Invalid location or destination format"}, status=status.HTTP_400_BAD_REQUEST)
 
+        #try:
+        price = self.calculate_fare(
+                customer_location,
+                customer_destination,
+                customer_vehicle_type,
+                customer_vehicle_type
+            )
         return Response({"price": price}, status=status.HTTP_200_OK)
+        # except Exception as e:
+        #     return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # #price = self.calculate_fare(customer_location, customer_destination, customer_vehicle_type, customer_vehicle_type)
+
+        #return Response({"price": price}, status=status.HTTP_200_OK)
 
     # Add a view to request ride by customer. Once it is requested pull drivers in 10km radiuus from kafka  and assign one to customer.
     @action(detail=False, methods=["post"], url_path="request-ride")

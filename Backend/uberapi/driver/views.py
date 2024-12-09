@@ -119,11 +119,11 @@ class DriverViewSet(viewsets.ModelViewSet):
         self.producer.send('available-drivers', message_object)
         return Response({"status": "Driver added to Kafka"})
     
-    def send_to_websocket(self, message_object):
-        async_to_sync(self.channel_layer.group_send)("group_available-drivers", {
-            "type": "send_message",
-            "message": message_object
-        })
+    # def send_to_websocket(self, message_object):
+    #     async_to_sync(self.channel_layer.group_send)("group_available-drivers", {
+    #         "type": "send_message",
+    #         "message": message_object
+    #     })
             
 
     @action(detail=True, methods=['put'], url_path='set-location')
@@ -293,7 +293,7 @@ class DriverViewSet(viewsets.ModelViewSet):
                 "status": "not available"
             }
             broadcast_obj_str = json.dumps(broadcast_obj)
-            self.send_to_websocket(broadcast_obj_str)
+            #self.send_to_websocket(broadcast_obj_str)
             return Response({"message": "Driver de-activated successfully"}, status=status.HTTP_200_OK)
         except Driver.DoesNotExist:
             return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)

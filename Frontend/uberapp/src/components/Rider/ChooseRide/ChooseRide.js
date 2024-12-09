@@ -35,22 +35,22 @@ const ChooseRide = ({ onClose, pickupLocation, dropoffLocation }) => {
       const url = `${BASE_API_URL}/api/rides/estimated-price/`;
   
       const response = await fetch(url, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${Cookies.get('access_token')}`,
         },
-        params: {
-          location: JSON.stringify({
+        body: JSON.stringify({
+          location: {
             lat: pickupLocation.lat,
             lng: pickupLocation.lng,
-          }),
-          destination: JSON.stringify({
+          },
+          destination: {
             lat: dropoffLocation.lat,
             lng: dropoffLocation.lng,
-          }),
+          },
           vehicle_type: vehicleType,
-        },
+        }),
       });
   
       if (!response.ok) {
