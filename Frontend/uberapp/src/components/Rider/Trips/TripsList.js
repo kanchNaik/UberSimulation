@@ -183,43 +183,8 @@ const TripsList = () => {
                 </div>
               </div>
             ))}
-
-               {/* Upload Button */}
-          <div className="upload-section text-center">
-            <button
-              className="upload-button btn btn-primary"
-              onClick={() => setUploadModalOpen(true)}
-            >
-              Upload File
-            </button>
-          </div>
-
-          {/* Upload Modal */}
-          <Modal isOpen={uploadModalOpen} onClose={() => setUploadModalOpen(false)}>
-            <div className="upload-modal-content">
-              <h3>Upload Images from Ride </h3>
-              <input
-                type="file"
-                accept="image/*,application/pdf"
-                onChange={handleFileChange}
-              />
-              {selectedFile && <p>Selected File: {selectedFile.name}</p>}
-              <div className="mt-3">
-                <button
-                  className="btn btn-secondary me-2"
-                  onClick={() => setUploadModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button className="btn btn-success" onClick={handleFileUpload}>
-                  Upload
-                </button>
-              </div>
-            </div>
-          </Modal>
           </section>
         </div>
-
         <div className="ride-promo">
           <img src={carIllustration} alt="Car Illustration" className="promo-image" />
           <h3>Get a ride in minutes</h3>
