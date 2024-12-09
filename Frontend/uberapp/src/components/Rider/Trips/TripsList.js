@@ -18,10 +18,8 @@ const TripsList = () => {
   const [pastTrips, setPastTrips] = useState([]);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,15 +28,13 @@ const TripsList = () => {
 
   const fetchTrips = async () => {
     try {
-      const response = await fetch(`${BASE_API_URL}/api/rides?customer_id=${Cookies.get('user_id')}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${Cookies.get('access_token')}`
-          }
-        });
+      const response = await fetch(`${BASE_API_URL}/api/rides?customer_id=${Cookies.get('user_id')}`, {
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('access_token')}`
+        }
+      });
       const data = await response.json();
       setTrips(data);
-      
       const currentDate = new Date();
       setUpcomingTrips(data.filter(trip => new Date(trip.date_time) > currentDate));
       setPastTrips(data.filter(trip => new Date(trip.date_time) <= currentDate));
@@ -51,23 +47,49 @@ const TripsList = () => {
     setSelectedFile(e.target.files[0]);
   };
 
-  const handleFileUpload = () => {
-    if (!selectedFile) {
-      alert("Please select a file to upload.");
+  const handleFileUpload = async () => {
+    if (!selectedFile || !selectedTrip) {
+      alert("Please select a file to upload and ensure a trip is selected.");
       return;
     }
-    alert(`File uploaded: ${selectedFile.name}`);
-    setUploadModalOpen(false);
-    setSelectedFile(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      formData.append('ride_id', selectedTrip.id);
+      formData.append('customer_id', Cookies.get('user_id'));
+
+      const token = Cookies.get('access_token');
+
+      const response = await fetch(`${BASE_API_URL}/api/rides/images/upload/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Image upload failed');
+      }
+
+      const result = await response.json();
+      console.log('Image uploaded successfully:', result);
+
+      setUploadModalOpen(false);
+      setSelectedFile(null);
+      fetchTrips();
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    }
   };
 
   const handleTripSelect = (filter) => {
     setTripFilter(filter);
     setTripDropdown(false);
-
     const currentDate = new Date();
     let filteredTrips;
-
     switch (filter) {
       case "All Trips":
         filteredTrips = trips;
@@ -80,7 +102,6 @@ const TripsList = () => {
         const selectedMonth = new Date(filter + " 1, " + currentDate.getFullYear()).getMonth();
         filteredTrips = trips.filter(trip => new Date(trip.date_time).getMonth() === selectedMonth);
     }
-
     setPastTrips(filteredTrips);
   };
 
@@ -97,14 +118,13 @@ const TripsList = () => {
   return (
     <div className="uber-trips-page">
       <Header />
-
       <main className="uber-main">
         <div className="trips-content">
           <section className="upcoming-trips">
             <h2>Upcoming</h2>
             {upcomingTrips.length > 0 ? (
               upcomingTrips.map(trip => (
-                <div key={trip.id} className="trip-item"  onClick={() => handleTripDetails(trip)}>
+                <div key={trip.id} className="trip-item" onClick={() => handleTripDetails(trip)}>
                   <h3>{trip.destination}</h3>
                   <p>{new Date(trip.date_time).toLocaleString()}</p>
                 </div>
@@ -115,49 +135,27 @@ const TripsList = () => {
                   <img src={carIllustration} alt="Car Illustration" />
                 </div>
                 <h2>You have no upcoming trips</h2>
-                <button
-                  className="request-ride-button"
-                  onClick={() => navigate("/customer/home")}
-                >
+                <button className="request-ride-button" onClick={() => navigate("/customer/home")}>
                   Reserve ride
                 </button>
               </>
             )}
           </section>
-
           <section className="past-trips">
             <h2>Past</h2>
             <div className="trip-filters">
               <div className="filter-dropdown">
-                <button
-                  className="filter-button"
-                  onClick={() => setTripDropdown(!tripDropdown)}
-                >
+                <button className="filter-button" onClick={() => setTripDropdown(!tripDropdown)}>
                   <FontAwesomeIcon icon={faCalendar} className="location-icon" />{" "}
                   {tripFilter} ▾
                 </button>
                 {tripDropdown && (
                   <div className="dropdown-menu scrollable-dropdown">
                     {[
-                      "All Trips",
-                      "Past 30 days",
-                      "December",
-                      "November",
-                      "October",
-                      "September",
-                      "August",
-                      "July",
-                      "June",
-                      "May",
-                      "April",
-                      "March",
-                      "February",
-                      "January",
+                      "All Trips", "Past 30 days", "December", "November", "October", "September",
+                      "August", "July", "June", "May", "April", "March", "February", "January",
                     ].map((month) => (
-                      <div
-                        key={month}
-                        onClick={() => handleTripSelect(month)}
-                      >
+                      <div key={month} onClick={() => handleTripSelect(month)}>
                         {month}
                       </div>
                     ))}
@@ -165,9 +163,8 @@ const TripsList = () => {
                 )}
               </div>
             </div>
-
             {pastTrips.map(trip => (
-              <div key={trip.id} className="past-trip-item"  onClick={() => handleTripDetails(trip)}>
+              <div key={trip.id} className="past-trip-item" onClick={() => handleTripDetails(trip)}>
                 <div className="past-trip-map">
                   <img src={trip.mapImage || "https://via.placeholder.com/150"} alt="Trip Map" />
                 </div>
@@ -183,51 +180,33 @@ const TripsList = () => {
                 </div>
               </div>
             ))}
-
-               {/* Upload Button */}
-          <div className="upload-section text-center">
-            <button
-              className="upload-button btn btn-primary"
-              onClick={() => setUploadModalOpen(true)}
-            >
-              Upload File
-            </button>
-          </div>
-
-          {/* Upload Modal */}
-          <Modal isOpen={uploadModalOpen} onClose={() => setUploadModalOpen(false)}>
-            <div className="upload-modal-content">
-              <h3>Upload File</h3>
-              <input
-                type="file"
-                accept="image/*,application/pdf"
-                onChange={handleFileChange}
-              />
-              {selectedFile && <p>Selected File: {selectedFile.name}</p>}
-              <div className="mt-3">
-                <button
-                  className="btn btn-secondary me-2"
-                  onClick={() => setUploadModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button className="btn btn-success" onClick={handleFileUpload}>
-                  Upload
-                </button>
-              </div>
+            <div className="upload-section text-center">
+              <button className="upload-button btn btn-primary" onClick={() => setUploadModalOpen(true)}>
+                Upload File
+              </button>
             </div>
-          </Modal>
+            <Modal isOpen={uploadModalOpen} onClose={() => setUploadModalOpen(false)}>
+              <div className="upload-modal-content">
+                <h3>Upload File</h3>
+                <input type="file" accept="image/*,application/pdf" onChange={handleFileChange} />
+                {selectedFile && <p>Selected File: {selectedFile.name}</p>}
+                <div className="mt-3">
+                  <button className="btn btn-secondary me-2" onClick={() => setUploadModalOpen(false)}>
+                    Cancel
+                  </button>
+                  <button className="btn btn-success" onClick={handleFileUpload}>
+                    Upload
+                  </button>
+                </div>
+              </div>
+            </Modal>
           </section>
         </div>
-
         <div className="ride-promo">
           <img src={carIllustration} alt="Car Illustration" className="promo-image" />
           <h3>Get a ride in minutes</h3>
           <p>Book an Uber from a web browser, no app install necessary.</p>
-          <button
-            className="request-ride-button"
-            onClick={() => navigate("/customer/home")}
-          >
+          <button className="request-ride-button" onClick={() => navigate("/customer/home")}>
             Request a Ride
           </button>
         </div>
@@ -240,5 +219,3 @@ const TripsList = () => {
 };
 
 export default TripsList;
-
-
