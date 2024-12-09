@@ -14,8 +14,8 @@ class Vehicle(models.Model):
 class Driver(models.Model):
     id = models.CharField(max_length=11, primary_key=True, editable=False, unique=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='driver_profile')
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100, db_index=True)
+    last_name = models.CharField(max_length=100, db_index=True)
     phone_number = models.CharField(max_length=15)
     address = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=100)
