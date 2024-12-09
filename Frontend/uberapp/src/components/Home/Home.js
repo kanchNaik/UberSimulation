@@ -1,3 +1,4 @@
+// Home.js
 import React, { useState, useEffect } from "react";
 import Header from "../Common/Header/CustomerHeader/Header";
 import RideForm from "../Common/Ride/RideForm";
@@ -8,19 +9,18 @@ import WebSocketService from '../../services/websocket';
 function Home() {
   const [showChooseRide, setShowChooseRide] = useState(false);
   const [locations, setLocations] = useState({
-    pickup: { address: '', lat: null, lng: null },
-    dropoff: { address: '', lat: null, lng: null }
+    pickup: { address: '', city: '', lat: null, lng: null, title: '' },
+    dropoff: { address: '', city: '', lat: null, lng: null, title: '' }
   });
   const [driverLocations, setDriverLocations] = useState([]);
 
-  // WebSocket connection for real-time driver locations
   useEffect(() => {
     const ws = new WebSocketService();
     ws.connect();
     
     ws.addCallback('driverLocations', (data) => {
       try {
-        console.log("data: ", data)
+        console.log("data: ", data);
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (parsedData.type === 'driver_locations') {
           setDriverLocations(parsedData.drivers);
@@ -38,17 +38,17 @@ function Home() {
     };
   }, []);
 
-  const handleLocationSelect = (type, place) => {
-    if (place.geometry) {
-      setLocations(prev => ({
-        ...prev,
-        [type]: {
-          address: place.formatted_address,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng()
-        }
-      }));
-    }
+  const handleLocationSelect = (type, locationData) => {
+    setLocations(prev => ({
+      ...prev,
+      [type]: {
+        address: locationData.address,
+        city: locationData.city,
+        lat: locationData.lat,
+        lng: locationData.lng,
+        title: locationData.title
+      }
+    }));
   };
 
   const handleSearchClick = () => {

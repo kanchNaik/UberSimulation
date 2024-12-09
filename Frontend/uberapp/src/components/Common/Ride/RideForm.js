@@ -1,9 +1,10 @@
+// RideForm.js
 import React, { useState } from "react";
 import "./RideFormStyles.css";
 
 const RideForm = ({ onLocationSelect, onSearch, locations }) => {
-  const [pickup, setPickup] = useState("");
-  const [dropoff, setDropoff] = useState("");
+  const [pickup, setPickup] = useState(locations.pickup.address || "");
+  const [dropoff, setDropoff] = useState(locations.dropoff.address || "");
   const [timeOption, setTimeOption] = useState("Pickup now");
   const [suggestions, setSuggestions] = useState({
     pickup: [],
@@ -24,10 +25,12 @@ const RideForm = ({ onLocationSelect, onSearch, locations }) => {
       
       const formattedSuggestions = data.items.map(item => ({
         address: item.address.label,
+        city: item.address.city,
         position: {
           lat: item.position.lat,
           lng: item.position.lng
-        }
+        },
+        title: item.title
       }));
 
       setSuggestions({ ...suggestions, [type]: formattedSuggestions });
@@ -48,20 +51,21 @@ const RideForm = ({ onLocationSelect, onSearch, locations }) => {
   };
 
   const handleSuggestionSelect = (suggestion, type) => {
+    const locationData = {
+      address: suggestion.address,
+      city: suggestion.city,
+      lat: suggestion.position.lat,
+      lng: suggestion.position.lng,
+      title: suggestion.title
+    };
+
     if (type === 'pickup') {
       setPickup(suggestion.address);
     } else {
       setDropoff(suggestion.address);
     }
-    onLocationSelect(type, {
-      formatted_address: suggestion.address,
-      geometry: {
-        location: {
-          lat: () => suggestion.position.lat,
-          lng: () => suggestion.position.lng
-        }
-      }
-    });
+    
+    onLocationSelect(type, locationData);
     setSuggestions({ ...suggestions, [type]: [] });
   };
 
