@@ -1,60 +1,42 @@
-import React, { useState } from 'react';
-import './PaymentHistory.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./PaymentHistory.css";
+import { BASE_API_URL } from "../../../Setupconstants";
+import Cookies from "js-cookie";
 
 const PaymentHistory = () => {
-  const [searchTerm, setSearchTerm] = useState(''); // State for search input
+  const [bills, setBills] = useState([]); // State for fetched bills
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [loading, setLoading] = useState(false); // State for loading
+  const [error, setError] = useState(null); // State for errors
 
-  // Static bills data
-  const bills = [
-    {
-      bill_id: '12345',
-      driver: 'John Doe',
-      customer: 'Jane Smith',
-      ride: 'Ride 56789',
-      date: '2024-12-01',
-      distance: '12.5 km',
-      amount: '$25.00',
-      status: 'Paid',
-    },
-    {
-      bill_id: '67890',
-      driver: 'Alice Brown',
-      customer: 'Bob White',
-      ride: 'Ride 67890',
-      date: '2024-12-02',
-      distance: '15.0 km',
-      amount: '$30.00',
-      status: 'Unpaid',
-    },
-    {
-      bill_id: '54321',
-      driver: 'Tom Green',
-      customer: 'Sara Black',
-      ride: 'Ride 54321',
-      date: '2024-12-03',
-      distance: '10.0 km',
-      amount: '$20.00',
-      status: 'Paid',
-    },
-  ];
+  const userId = Cookies.get("user_id"); // Retrieve user ID from cookies (or any other source)
 
-//   useEffect(() => {
-//     // Fetch bills from API
-//     const fetchBills = async () => {
-//       try {
-//         const response = await fetch('/api/billing'); // Replace with your API endpoint
-//         if (!response.ok) throw new Error('Failed to fetch bills');
-//         const data = await response.json();
-//         setBills(data);
-//       } catch (err) {
-//         setError(err.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
+  // Fetch bills from the existing /api/billing/search endpoint
+  useEffect(() => {
+    const fetchPaymentHistory = async () => {
+      setLoading(true); // Start loading
+      setError(null); // Clear any previous errors
 
-//     fetchBills();
-//   }, []);
+      try {
+        const response = await axios.get(`${BASE_API_URL}/api/billing/search`, {
+          params: { user_id: userId },
+          headers: {
+            Authorization: `Bearer ${Cookies.get("access_token")}`,
+          },
+        });
+
+        setBills(response.data); // Update bills state with fetched data
+      } catch (err) {
+        console.error("Error fetching payment history:", err);
+        setError("Failed to fetch payment history");
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchPaymentHistory();
+  }, [userId]);
 
   // Filter bills by searchTerm
   const filteredBills = bills.filter((bill) =>
@@ -76,40 +58,50 @@ const PaymentHistory = () => {
         />
       </div>
 
+      {/* Loading State */}
+      {loading && <p>Loading payment history...</p>}
+
+      {/* Error State */}
+      {error && <p className="error-message">{error}</p>}
+
       {/* Table */}
-      <table className="payment-history-table">
-        <thead>
-          <tr>
-            <th>Bill ID</th>
-            <th>Driver</th>
-            <th>Customer</th>
-            <th>Ride</th>
-            <th>Date</th>
-            <th>Distance</th>
-            <th>Amount</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredBills.map((bill) => (
-            <tr key={bill.bill_id}>
-              <td>{bill.bill_id}</td>
-              <td>{bill.driver}</td>
-              <td>{bill.customer}</td>
-              <td>{bill.ride}</td>
-              <td>{bill.date}</td>
-              <td>{bill.distance}</td>
-              <td>{bill.amount}</td>
-              <td>{bill.status}</td>
-            </tr>
-          ))}
-          {filteredBills.length === 0 && (
+      {!loading && !error && (
+        <table className="payment-history-table">
+          <thead>
             <tr>
-              <td colSpan="8" style={{ textAlign: 'center' }}>No results found</td>
+              <th>Bill ID</th>
+              <th>Driver</th>
+              <th>Customer</th>
+              <th>Ride</th>
+              <th>Date</th>
+              <th>Distance</th>
+              <th>Amount</th>
+              <th>Status</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredBills.map((bill) => (
+              <tr key={bill.bill_id}>
+                <td>{bill.bill_id}</td>
+                <td>{bill.driver_full_name}</td>
+                <td>{bill.customer_full_name}</td>
+                <td>{bill.ride}</td>
+                <td>{bill.date}</td>
+                <td>{bill.distance}</td>
+                <td>${bill.amount}</td>
+                <td>{bill.status}</td>
+              </tr>
+            ))}
+            {filteredBills.length === 0 && (
+              <tr>
+                <td colSpan="8" style={{ textAlign: "center" }}>
+                  No results found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
