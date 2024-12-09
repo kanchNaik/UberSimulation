@@ -33,7 +33,7 @@ body, html {
 
 /* Trips Content Section */
 .trips-content {
-  flex: 3; /* Occupies most of the screen space */
+  flex: 1; /* Occupies most of the screen space */
   display: flex;
   flex-direction: column;
   gap: 30px; /* Increased gap for better separation between sections */

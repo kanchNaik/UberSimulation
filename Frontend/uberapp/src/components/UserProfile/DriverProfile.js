@@ -332,6 +332,7 @@ const DriverProfile = () => {
           <Button variant="primary" onClick={() => handleFileUpload('image')}>Upload</Button>
         </Modal.Footer>
       </Modal>
+      
       <Modal show={videoModal} onHide={() => setVideoModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Upload Introduction Video</Modal.Title>

@@ -197,7 +197,7 @@ const TripsList = () => {
           {/* Upload Modal */}
           <Modal isOpen={uploadModalOpen} onClose={() => setUploadModalOpen(false)}>
             <div className="upload-modal-content">
-              <h3>Upload File</h3>
+              <h3>Upload Images from Ride </h3>
               <input
                 type="file"
                 accept="image/*,application/pdf"
